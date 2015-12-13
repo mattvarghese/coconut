@@ -1,4 +1,4 @@
-# coconut
+# Coconut
 
 ## About
 
@@ -62,7 +62,7 @@ where you need to issue commands. The following commands are supported
  10. 'b {breakpoint no.} {break address}' set one of the 0-15 breakpoints. To unset a breakpoint, set its address as -1.
  11. 'B' view all breakpoints.
 
-Note : An example of virtual terminal mentioned above is an 'xterm' window. Howevr, you can use any terminal.
+Note: An example of virtual terminal mentioned above is an 'xterm' window. Howevr, you can use any terminal.
 
 ## Distribution Structure
 ### 'asm' directory
