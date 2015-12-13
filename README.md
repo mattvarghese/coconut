@@ -23,6 +23,48 @@ Copyright 2005-2015 **Varghese Mathew (Matt)**
 > You should have received a copy of the GNU General Public License
 > along with Coconut.  If not, see http://www.gnu.org/licenses/
 
+## Using Coconut
+Use of this distribution is subject to the GNU General Public License
+
+You need to have 'c++', 'flex', 'bison' and 'POSIX' libraries installed on your computer to use this distribution.
+
+The distribution has been tested and verified under the following platforms
+ 1. Redhat / linux 9 x86
+ 2. Ubuntu / Linux 15.10 x64
+ 3. Ubuntu MATE / Linux 15.10 armhf on Raspberry Pi 2
+
+To use the distribution, move into the 'test' directory and run 'make' if your terminal doesn't support colors, remove the flag *'-D__WITH_COLOR'* from each of the files 'mips/Makefile', 'asm/Makefile', 'io/Makefile'
+
+Once the compilation completes without errors, run 
+> ./asm a.out {.mips file}
+
+to assemble a mips program for use by the simulatedprocessor. or if you get annoyed by the flood of output when assembling, issue the command as
+> ./asm a.out {.mips file} > /dev/null
+
+Then on one virtual terminal (xterm) run 
+> ./dumbterminal
+
+and on another run 
+> ./coconut
+
+'./coconut' asks you to first pick the caches. then it brings you to the a prompt 
+> mips > 
+
+where you need to issue commands. The following commands are supported
+ 1. 'n' execute one clock cycle of the processor.
+ 2. 'c {number}' execute {number} number of clock cycles.
+ 3. 'p' print values of registers. (small 'p')
+ 4. 'P' print values of registers for registers whose value is not zero. (capital 'P')
+ 5. 'q' quit.
+ 6. 'm {address}' display the value stored at memory addres {address}.
+ 7. 'd {address}' display the value stored at 1-level data cache address {address}.
+ 8. 'i {address}' display the value stored at 1-level instruction cache address {address}.
+ 9. 's' display stastics for the caches.
+ 10. 'b {breakpoint no.} {break address}' set one of the 0-15 breakpoints. To unset a breakpoint, set its address as -1.
+ 11. 'B' view all breakpoints.
+
+Note : An example of virtual terminal mentioned above is an 'xterm' window. Howevr, you can use any terminal.
+
 ## Distribution Structure
 ### 'asm' directory
 Contains the source for a simple assembler for the simulated processor.
@@ -44,49 +86,3 @@ This is where the programs are run from.  Also it contains a few .mips files whi
 
 ### 'sample_interactions' directory
 This directory contains sample outputs procured from test runs of the processor.  This directory is NOT required for the application and may safely be deleted in part or in full.
-
-## Using the distribution:
-Use of this distribution is subject to the GNU General Public License
-
-You need to have 'c++', 'flex', 'bison' and 'POSIX' libraries installed on your computer to use this distribution.
-
-The distribution has been tested and verified under the following platforms
-1. Redhat / linux 9 x86
-2. Ubuntu / Linux 15.10 x64
-3. Ubuntu MATE / Linux 15.10 armhf on Raspberry Pi 2
-
-To use the distribution, move into the 'test' directory and run 'make' if your terminal doesn't support colors, remove the flag '-D__WITH_COLOR' from each of the files 'mips/Makefile', 'asm/Makefile', 'io/Makefile'
-
-Once the compilation completes without errors, run 
-> './asm a.out {.mips file}' 
-
-to assemble a mips program for use by the simulatedprocessor.
-
-or if you get annoyed by the flood of output when assembling, issue the command as
-> './asm a.out {.mips file} > /dev/null'
-
-Then on one virtual terminal (xterm) run 
-> './dumbterminal' 
-
-and on another run 
-> './mips'
-
-'./mips' asks you to first pick the caches. then it brings you to the a prompt 
-> 'mips > '
-
-where you need to issue commands.
-
-The following commands are supported
-1. 'n' execute one clock cycle of the processor.
-2. 'c {number}' execute {number} number of clock cycles.
-3. 'p' print values of registers. (small 'p')
-4. 'P' print values of registers for registers whose value is not zero. (capital 'P')
-5. 'q' quit.
-6. 'm {address}' display the value stored at memory addres {address}.
-7. 'd {address}' display the value stored at 1-level data cache address {address}.
-8. 'i {address}' display the value stored at 1-level instruction cache address {address}.
-9. 's' display stastics for the caches.
-10. 'b {breakpoint no.} {break address}' set one of the 0-15 breakpoints. To unset a breakpoint, set its address as -1.
-11. 'B' view all breakpoints.
-
-Note : An example of virtual terminal mentioned above is an 'xterm' window. Howevr, you can use any terminal.
