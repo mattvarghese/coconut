@@ -1,0 +1,295 @@
+ # Copyright 2005-2015 Varghese Mathew (Matt)
+ # 
+ # This file is part of Coconut (TM).
+ # Coconut is a
+ #     Multi-threaded simulation of the pipeline of a MIPS-like
+ #     Microprocessor (integer instructions only) replete with 
+ #     Memory Subsystem, Caches and their performance analysis,
+ #     I/O device modules and an assembler.
+ # 
+ # Coconut is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version.
+ # 
+ # Coconut is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ # 
+ # You should have received a copy of the GNU General Public License
+ # along with Coconut.  If not, see <http://www.gnu.org/licenses/>.
+ # 
+
+The symbol table is printed below
+
+EXIT : 2524
+GETINT_END : 2504
+GETINT_LOOP : 2476
+GETINT : 2440
+PRINTSTR_LOOPEND : 2424
+PRINTSTR_LOOP : 2404
+PRINTSTR : 2392
+PRINTINT_LOOP2 : 2348
+PRINTINT_LOOP1 : 2316
+PRINTINT : 2276
+FACT_L1 : 2244
+FACT : 2212
+MAIN : 2132
+STR3 : 1924
+STR2 : 1904
+STR1 : 1828
+STACK : 1828
+
+Sample Interaction
+
+
+[miniproject@localhost test]$ ./mips
+
+Choose the type of cache you want for Data
+1-level DATA Cache : The choices available are
+ 1. No Cache 
+ 2. Simple single level FIFO writeback cache 
+ 3. Multilevel Cache 
+Please enter your choice : 3
+
+Enter the number of levels in the Cache : 2
+
+Choose the 2-level cache : 
+2-level DATA Cache : The choices available are
+ 1. No Cache 
+ 2. Simple single level FIFO writeback cache 
+Please enter your choice : 2
+
+Enter number of Blocks in cache : 128
+
+Enter number of words per block : 32
+
+Enter associativity : 4
+
+Select extent of cache info displayed : 
+ 1.verbose
+ 2.silent
+Enter your choice : 2
+
+Choose the 1-level cache : 
+1-level DATA Cache : The choices available are
+ 1. No Cache 
+ 2. Simple single level FIFO writeback cache 
+Please enter your choice : 2
+
+Enter number of Blocks in cache : 16
+
+Enter number of words per block : 4
+
+Enter associativity : 2
+
+Select extent of cache info displayed : 
+ 1.verbose
+ 2.silent
+Enter your choice : 2
+
+Choose the type of cache you want for Instructions
+1-level INSTRUCTION Cache : The choices available are
+ 1. No Cache 
+ 2. Simple single level FIFO writeback cache 
+ 3. Multilevel Cache 
+Please enter your choice : 2
+
+Enter number of Blocks in cache : 62
+
+Enter number of words per block : 16
+
+Enter associativity : 4
+
+Select extent of cache info displayed : 
+ 1.verbose
+ 2.silent
+Enter your choice : 2
+
+[ PortManager :: AddPort ] Connected Device 1 to socket 5678 successfully
+[ PortManager :: AddPort ] Connected Device 2 to socket 5680 successfully
+[** Clock: 0 **] Executed...
+
+mips > c 990
+[__ PC_update_control __] NPC updated by stage 0 to 1028
+[ Stage0 ] PC to fetch = 1024, Instruction = 34114
+[ Stage1 ] NOP
+[ Stage2 ] NOP
+[ Stage3 ] NOP
+[ Stage4 ] NOP
+[** Clock: 1 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 0 to 1032
+[ Stage0 ] PC to fetch = 1028, Instruction = 0
+[ Stage2 ] NOP
+[ Stage3 ] NOP
+[ Stage4 ] NOP
+[__ PC_update_control __] NPC updated by stage 1 to 2132
+[ Stage1:UpdatePC ] updated NPC with absolute address
+[ Stage1 ] J (jump) to absolute address 2132
+[** Clock: 2 **] Executed...
+[** Clock: 2 **] Flushing stage 0
+
+[__ PC_update_control __] NPC updated by stage 0 to 2136
+[ Stage0 ] PC to fetch = 2132, Instruction = 119859208
+[ Stage1 ] NOP
+[ Stage2 ] J idle
+[ Stage3 ] NOP
+[ Stage4 ] NOP
+[** Clock: 3 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 0 to 2140
+[ Stage0 ] PC to fetch = 2136, Instruction = 59407
+[ Stage1:RegisterFetch ] Register $zero is always 0
+[ Stage1:RegisterFetch ] A = 0
+[ Stage1 ] ADDI r0 + imm 1828 -> r29
+[ Stage2 ] NOP
+[ Stage3 ] J idle
+[ Stage4 ] NOP
+[** Clock: 4 **] Executed...
+
+
+<< clock cycle outputs 5 to 986 have been removed >>
+
+
+[__ PC_update_control __] NPC updated by stage 0 to 2212
+[ Stage0 ] PC to fetch = 2208, Instruction = 40386
+[ Stage2 ] NOP
+[ Stage3 ] JR idle
+[ Stage4:RegisterWrite ] writing value 1812 to register r29
+[ Stage4 ] ADDI stored 1812 into r29
+[ Stage1 ] NOP
+[** Clock: 987 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 0 to 2216
+[ Stage0 ] PC to fetch = 2212, Instruction = -463032
+[ Stage2 ] NOP
+[ Stage3 ] NOP
+[ Stage4 ] JR idle
+[__ PC_update_control __] NPC updated by stage 1 to 2524
+[ Stage1:UpdatePC ] updated NPC with absolute address
+[ Stage1 ] J (jump) to absolute address 2524
+[** Clock: 988 **] Executed...
+[** Clock: 988 **] Flushing stage 0
+
+[__ PC_update_control __] NPC updated by stage 0 to 2528
+[ Stage0 ] PC to fetch = 2524, Instruction = 0
+[ Stage2 ] J idle
+[ Stage3 ] NOP
+[ Stage4 ] NOP
+[ Stage1 ] NOP
+[** Clock: 989 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 0 to 2532
+[ Stage0 ] PC to fetch = 2528, Instruction = 0
+[ Stage2 ] NOP
+[ Stage3 ] J idle
+[ Stage4 ] NOP
+[ Stage1 ] NOP
+[** Clock: 990 **] Executed...
+
+mips > s
+
+dataCache Statistics : 
+[ SimpleCache::Statistics ] Statistics for the 1-level 
+	DATA cache are displayed
+Number of Blocks : 16
+Words per block : 4
+Associativity : 2
+Number of sets : 8
+Total Cache Size in Bytes : 256
+
+Total Number of reads : 129
+Total Number of read Hits : 107
+Total Number of read Misses : 22
+Read Hit Ratio : 0.829457
+
+Total Number of writes : 55
+Total Number of write Hits : 46
+Total Number of write Misses : 9
+Write Hit Ratio : 0.836364
+
+Total Number of accesses : 184
+Total Number of Hits : 153
+Total Number of Misses : 31
+Overall Hit Ratio : 0.831522
+[ SimpleCache::Statistics ] Statistics for the 2-level 
+	DATA cache are displayed
+Number of Blocks : 128
+Words per block : 32
+Associativity : 4
+Number of sets : 32
+Total Cache Size in Bytes : 16384
+
+Total Number of reads : 124
+Total Number of read Hits : 120
+Total Number of read Misses : 4
+Read Hit Ratio : 0.967742
+
+Total Number of writes : 8
+Total Number of write Hits : 8
+Total Number of write Misses : 0
+Write Hit Ratio : 1
+
+Total Number of accesses : 132
+Total Number of Hits : 128
+Total Number of Misses : 4
+Overall Hit Ratio : 0.969697
+instrCache Statistics : 
+[ SimpleCache::Statistics ] Statistics for the 1-level 
+	INSTRUCTION cache are displayed
+Number of Blocks : 64
+Words per block : 16
+Associativity : 4
+Number of sets : 16
+Total Cache Size in Bytes : 4096
+
+Total Number of reads : 990
+Total Number of read Hits : 982
+Total Number of read Misses : 8
+Read Hit Ratio : 0.991919
+
+Total Number of writes : 0
+Total Number of write Hits : 0
+Total Number of write Misses : 0
+Write Hit Ratio : 0
+
+Total Number of accesses : 990
+Total Number of Hits : 982
+Total Number of Misses : 8
+Overall Hit Ratio : 0.991919
+mips > q
+
+[__ PC_update_control __] NPC updated by stage 0 to 2536
+[ Stage0 ] PC to fetch = 2532, Instruction = 0
+[ Stage2 ] NOP
+[ Stage3 ] NOP
+[ Stage4 ] J idle
+[ Stage1 ] NOP
+The value of cout_mutex at closing = 1
+[ PortManager :: RemovePort ] Successfully released Device 1
+[ PortManager :: RemovePort ] Successfully released Device 2
+The value of stagesem[0] at closing = 0
+The value of stagesem[1] at closing = 0
+The value of stagesem[2] at closing = 0
+The value of stagesem[3] at closing = 0
+The value of stagesem[4] at closing = 0
+The value of clocksem at closing = 0
+The value of pc_mutex at closing = 1
+
+
+The output from dumbterminal
+
+[miniproject@localhost test]$ ./dumbterminal
+
+Input Thread made contact !!
+
+Output Thread made contact !!
+
+Enter the number whose factorial is to be found : 12
+
+The factorial of 12 is 479001600
+
+
+

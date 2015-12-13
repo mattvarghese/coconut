@@ -1,0 +1,54 @@
+ # Copyright 2005-2015 Varghese Mathew (Matt)
+ # 
+ # This file is part of Coconut (TM).
+ # Coconut is a
+ #     Multi-threaded simulation of the pipeline of a MIPS-like
+ #     Microprocessor (integer instructions only) replete with 
+ #     Memory Subsystem, Caches and their performance analysis,
+ #     I/O device modules and an assembler.
+ # 
+ # Coconut is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version.
+ # 
+ # Coconut is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ # 
+ # You should have received a copy of the GNU General Public License
+ # along with Coconut.  If not, see <http://www.gnu.org/licenses/>.
+ # 
+
+	begin	1000
+	start	1024
+ARR1	dw	[4]
+VAR1	dw	23
+VAR2	dw	19
+
+	# following is how you load a long address
+	# into a particular register 
+	addi	$t0, $zero, VAR2
+	lui	$t0, VAR2
+	
+	addi	$t0, $zero, 128
+	addi	$t1, $zero, -128
+	addi	$t2, $zero, 3
+	
+	sll	$s0, $t0, 3		#1024
+	sllv	$s0, $t0, $t2		#1024
+	sll	$s1, $t1, 3		#-1024
+	sllv	$s1, $t1, $t2		#-1024
+	
+	sra	$s0, $t0, 3		#16
+	srav	$s0, $t0, $t2		#16
+	sra	$s1, $t1, 3		#-16
+	srav	$s1, $t1, $t2		#-16
+	
+	srl	$s0, $t0, 3		#16
+	srlv	$s0, $t0, $t2		#16
+	srl	$s1, $t1, 3		#536870896
+	srlv	$s1, $t1, $t2		#536870896
+	
+	end

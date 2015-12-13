@@ -1,0 +1,210 @@
+ # Copyright 2005-2015 Varghese Mathew (Matt)
+ # 
+ # This file is part of Coconut (TM).
+ # Coconut is a
+ #     Multi-threaded simulation of the pipeline of a MIPS-like
+ #     Microprocessor (integer instructions only) replete with 
+ #     Memory Subsystem, Caches and their performance analysis,
+ #     I/O device modules and an assembler.
+ # 
+ # Coconut is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version.
+ # 
+ # Coconut is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ # 
+ # You should have received a copy of the GNU General Public License
+ # along with Coconut.  If not, see <http://www.gnu.org/licenses/>.
+ # 
+
+	begin	1024
+	start	1024
+	
+	j	MAIN
+	
+	dw	[200]
+STACK
+STR1	dw	"\nThe factorial of "
+	dw	0
+STR2	dw	" is "
+	dw	0
+STR3	dw	"\nEnter the number whose factorial is to be found : "
+	dw	0
+
+MAIN	
+	addi	$sp, $zero, STACK
+	lui	$sp, STACK
+	
+	addi	$a0, $zero, STR3
+	lui	$a0, STR3
+	jal	PRINTSTR
+	
+	jal	GETINT
+	
+	add	$t0, $zero, $v0
+	
+	addi	$a0, $zero, STR1
+	lui	$a0, STR1
+	jal	PRINTSTR
+	
+	add	$a0, $zero, $t0
+	jal	PRINTINT
+	
+	addi	$a0, $zero, STR2
+	lui	$a0, STR2
+	jal	PRINTSTR
+	
+	add	$a0, $zero, $t0
+	jal	FACT
+	
+	add	$a0, $zero, $v0
+	jal	PRINTINT
+	
+	j	EXIT
+
+
+#------------------------------------------------------------
+# Procedure to find the factorial of a number
+# a0 - number whose factorial is to be found
+# v0 - returns the factorial
+
+FACT	addi	$sp, $sp, -8
+	sw	$ra, 4($sp)
+	sw	$a0, 0($sp)
+	
+	slti	$t0, $a0, 1
+	beq	$t0, $zero, FACT_L1
+	
+	addi	$v0, $zero,1
+	addi	$sp, $sp, 8
+	jr	$ra
+	
+FACT_L1	addi	$a0, $a0, -1
+	jal	FACT
+	
+	lw	$a0, 0($sp)
+	lw	$ra, 4($sp)
+	addi	$sp, $sp, 8
+	
+	mult	$a0, $v0
+	mflo	$v0
+	
+	jr	$ra
+	
+
+#------------------------------------------------------------
+# Procedure to print an integer
+# a0 - integer to be printed
+
+PRINTINT
+	addi	$sp, $sp, -16
+	sw	$a0, 0($sp)
+	sw	$t0, 4($sp)
+	sw	$t1, 8($sp)
+	sw	$t2, 12($sp)
+	
+	addi	$t0, $zero, 10
+	add	$t2, $zero, $zero
+	
+	bgez	$a0, PRINTINT_LOOP1
+	addi	$t1, $zero, '-'
+	dout	$t1, 2			# print the - sign
+	
+PRINTINT_LOOP1
+	div	$a0, $t0
+	mflo	$a0			# quotient
+	mfhi	$t1			# the remainder
+	addi	$t1, $t1, '0'		# make it a character
+	addi	$t2, $t2, 1		# keep count of number of digits placed on stack
+	addi	$sp, $sp, -4
+	sw	$t1, 0($sp)		# place the digit on the stack
+	bne	$a0, $zero, PRINTINT_LOOP1
+	
+PRINTINT_LOOP2
+	lw	$t1, 0($sp)		# take the digit off the stack
+	addi	$sp, $sp, 4
+	addi	$t2, $t2, -1		# decrement count
+	dout	$t1, 2			# display the digit
+	bne	$t2, $zero, PRINTINT_LOOP2	# if there are more digits, loop
+	
+	lw	$a0, 0($sp)
+	lw	$t0, 4($sp)
+	lw	$t1, 8($sp)
+	lw	$t2, 12($sp)
+	addi	$sp, $sp, 16
+	jr	$ra
+	
+#------------------------------------------------------------
+	
+
+#------------------------------------------------------------
+# Procedure to print a string.
+# a0 - start address of null terminated string
+
+PRINTSTR
+	addi	$sp, $sp, -8
+	sw	$a0, 0($sp)
+	sw	$t0, 4($sp)
+	
+PRINTSTR_LOOP
+	lw	$t0, 0($a0)
+	beq	$t0, $zero, PRINTSTR_LOOPEND
+	dout	$t0, 2
+	addi	$a0, $a0, 4
+	j	PRINTSTR_LOOP
+	
+PRINTSTR_LOOPEND
+	
+	lw	$a0, 0($sp)
+	lw	$t0, 4($sp)
+	addi	$sp, $sp, 8
+	
+	jr	$ra
+#------------------------------------------------------------
+	
+
+#------------------------------------------------------------
+# procedure to get a number from the user
+# v0 - the number input
+
+GETINT
+	addi	$sp, $sp, -16
+	sw	$t0, 0($sp)
+	sw	$t1, 4($sp)
+	sw	$t2, 8($sp)
+	sw	$t3, 12($sp)
+	
+	addi	$t1, $zero, '0'
+	addi	$t2, $zero, '\n'
+	addi	$t3, $zero, 10
+	add	$v0, $zero, $zero
+	
+GETINT_LOOP
+	din	$t0, 1			# read the digit
+	beq	$t0, $t2, GETINT_END	# if digit is '\r' stop looping
+	
+	sub	$t0, $t0, $t1		# compute the arithmetic value of digit
+	mult	$v0, $t3			# $v0 = $v0 * 10
+	mflo	$v0
+	
+	add	$v0, $v0, $t0		# $v0 = $v0 + new digit.
+	j	GETINT_LOOP
+	
+GETINT_END
+	
+	lw	$t0, 0($sp)
+	lw	$t1, 4($sp)
+	lw	$t2, 8($sp)
+	lw	$t3, 12($sp)
+	
+	jr	$ra
+
+#------------------------------------------------------------
+
+EXIT
+	end
+

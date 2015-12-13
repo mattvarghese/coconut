@@ -1,0 +1,965 @@
+
+%{
+/* Copyright 2005-2015 Varghese Mathew (Matt)
+ *
+ * This file is part of Coconut (TM).
+ * Coconut is a
+ *     Multi-threaded simulation of the pipeline of a MIPS-like
+ *     Microprocessor (integer instructions only) replete with 
+ *     Memory Subsystem, Caches and their performance analysis,
+ *     I/O device modules and an assembler.
+ * 
+ * Coconut is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Coconut is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Coconut.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+ 
+	# include <fstream>
+	using std::ofstream;
+	
+	# include <iostream>
+	using std::cerr;
+	# include <iomanip>
+	using std::setw;
+	
+	# include <cstring>
+	using std::strlen;
+	
+	# include "../include/instruction.h"
+	# include "../include/opcodes.h"
+	# include "../include/color.h"
+	# include "structures.h"
+	
+	extern int lineno;	// from main.cpp
+	extern char * yytext;	// from lexer.lex
+	extern bool pass1;	// from main.cpp
+	extern ofstream ofile;	// from main.cpp
+	extern int yylex ();	// from lexer.lex
+	
+	int yyerror ( char * );
+	int address = 0;
+	int errorcount = 0;
+	
+	Symtab symtab;
+	
+	OneRecord rec;
+	
+	const int size = sizeof ( OneRecord );
+	
+%}
+
+%token ADD ADDI
+%token AND ANDI NOR OR ORI
+%token DIV MULT
+%token SLL SLLV SRA SRAV SRL SRLV
+%token SUB
+%token XOR XORI
+%token LUI
+%token SLT SLTI
+%token BEQ BGEZ BGTZ BLEZ BLTZ BNE
+%token J JAL JALR JR
+%token LW SW
+%token MFHI MFLO MTHI MTLO
+%token SYSCALL NOP
+%token DIN DOUT RDIN RDOUT
+
+%token DW START BEG END  
+
+%token	REGISTER IDENTIFIER INTCONSTANT STRING
+
+%start program
+
+%union
+{
+	char id[100];
+	int  value;
+}
+
+%type <value> INTCONSTANT REGISTER
+%type <id>    IDENTIFIER STRING
+
+%%
+
+program: newlines begin_stmt newlines start_stmt instructions newlines END newlines
+	| error
+	;
+
+begin_stmt: BEG INTCONSTANT '\n'
+		{
+			address = $2;
+			rec.address = 0;
+			rec.inst.iV = 0;
+		}
+	;
+
+start_stmt: START INTCONSTANT '\n'
+		{
+			if ( ! pass1 )
+			{
+				rec.address = 0;
+				rec.inst.iV = $2;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+		}
+	;
+
+newlines:
+	| newlines '\n'
+	;
+	
+instructions: newlines label_one_instruction
+	| instructions newlines label_one_instruction
+	;
+
+label_one_instruction: IDENTIFIER {
+			if ( pass1) symtab.Insert ( $1, address );
+		}
+	| one_instruction '\n'
+	| error
+	;
+
+one_instruction: DW INTCONSTANT
+		{
+			if ( ! pass1 )
+			{
+				rec.address = address;
+				rec.inst.iV = $2;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| DW '[' INTCONSTANT ']' 
+		{
+			address += 4 * $3;
+		}
+	| DW STRING
+		{
+			int length = strlen ( $2 );
+			for ( int i = 0; i < length; i++ )
+			{
+				if ( ! pass1 )
+				{
+					rec.address = address;
+					rec.inst.iV = static_cast<word_32>($2[i]);
+					ofile.write ( reinterpret_cast<char*>(&rec), size );
+				}
+				address += 4;
+			}
+		}
+	| ADD REGISTER ',' REGISTER ',' REGISTER
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = $4;
+				rec.inst.rF.rt = $6;
+				rec.inst.rF.rd = $2;
+				rec.inst.rF.shamt = 0;
+				rec.inst.rF.funct = FUNCT_ADD;
+				
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| ADDI REGISTER ',' REGISTER ',' INTCONSTANT
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.iF.op = OP_ADDI;
+				rec.inst.iF.rs = $4;
+				rec.inst.iF.rt = $2;
+				rec.inst.iF.imm = $6;
+				
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| ADDI REGISTER ',' REGISTER ',' IDENTIFIER
+		{
+			if ( ! pass1 )
+			{
+				unsigned int targAddr;
+				if ( !symtab.LookUp ( $6, targAddr) ) // If no such entry
+				{
+					cerr << red << "\nLine:" << setw(4) << lineno 
+						<< ", pass:" << setw(2)	<< (( pass1 )? 1 : 2) 
+						<< ", Undefined Identifier : " 
+						<< $4 << reset << "\n";
+					errorcount ++;
+				}
+				rec.inst.iF.op = OP_ADDI;
+				rec.inst.iF.rs = $4;
+				rec.inst.iF.rt = $2;
+				rec.inst.iF.imm = targAddr;
+				
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| AND REGISTER ',' REGISTER ',' REGISTER
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = $4;
+				rec.inst.rF.rt = $6;
+				rec.inst.rF.rd = $2;
+				rec.inst.rF.shamt = 0;
+				rec.inst.rF.funct = FUNCT_AND;
+				
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| ANDI REGISTER ',' REGISTER ',' INTCONSTANT
+		{
+			if ( !pass1 )
+			{
+				rec.inst.iF.op = OP_ANDI;
+				rec.inst.iF.rt = $2;
+				rec.inst.iF.rs = $4;
+				rec.inst.iF.imm = $6;
+				
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| DIV REGISTER ',' REGISTER
+		{
+			if ( !pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = $2;
+				rec.inst.rF.rt = $4;
+				rec.inst.rF.rd = 0;
+				rec.inst.rF.shamt = 0;
+				rec.inst.rF.funct = FUNCT_DIV;
+				
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| MULT REGISTER ',' REGISTER
+		{
+			if ( !pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = $2;
+				rec.inst.rF.rt = $4;
+				rec.inst.rF.rd = 0;
+				rec.inst.rF.shamt = 0;
+				rec.inst.rF.funct = FUNCT_MULT;
+				
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| NOR REGISTER ',' REGISTER ',' REGISTER
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = $4;
+				rec.inst.rF.rt = $6;
+				rec.inst.rF.rd = $2;
+				rec.inst.rF.shamt = 0;
+				rec.inst.rF.funct = FUNCT_NOR;
+				
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| OR REGISTER ',' REGISTER ',' REGISTER
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = $4;
+				rec.inst.rF.rt = $6;
+				rec.inst.rF.rd = $2;
+				rec.inst.rF.shamt = 0;
+				rec.inst.rF.funct = FUNCT_OR;
+				
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| ORI REGISTER ',' REGISTER ',' INTCONSTANT
+		{
+			if ( !pass1 )
+			{
+				rec.inst.iF.op = OP_ORI;
+				rec.inst.iF.rt = $2;
+				rec.inst.iF.rs = $4;
+				rec.inst.iF.imm = $6;
+				
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| SLL REGISTER ',' REGISTER ',' INTCONSTANT
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = 0;
+				rec.inst.rF.rd = $2;
+				rec.inst.rF.rt = $4;
+				rec.inst.rF.shamt = $6;
+				rec.inst.rF.funct = FUNCT_SLL;
+				
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| SLLV REGISTER ',' REGISTER ',' REGISTER
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = $6;
+				rec.inst.rF.rd = $2;
+				rec.inst.rF.rt = $4;
+				rec.inst.rF.shamt = 0;
+				rec.inst.rF.funct = FUNCT_SLLV;
+				
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| SRA REGISTER ',' REGISTER ',' INTCONSTANT
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = 0;
+				rec.inst.rF.rd = $2;
+				rec.inst.rF.rt = $4;
+				rec.inst.rF.shamt = $6;
+				rec.inst.rF.funct = FUNCT_SRA;
+				
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| SRAV REGISTER ',' REGISTER ',' REGISTER
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = $6;
+				rec.inst.rF.rd = $2;
+				rec.inst.rF.rt = $4;
+				rec.inst.rF.shamt = 0;
+				rec.inst.rF.funct = FUNCT_SRAV;
+				
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| SRL REGISTER ',' REGISTER ',' INTCONSTANT
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = 0;
+				rec.inst.rF.rd = $2;
+				rec.inst.rF.rt = $4;
+				rec.inst.rF.shamt = $6;
+				rec.inst.rF.funct = FUNCT_SRL;
+				
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| SRLV REGISTER ',' REGISTER ',' REGISTER
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = $6;
+				rec.inst.rF.rd = $2;
+				rec.inst.rF.rt = $4;
+				rec.inst.rF.shamt = 0;
+				rec.inst.rF.funct = FUNCT_SRLV;
+				
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| SUB REGISTER ',' REGISTER ',' REGISTER
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = $4;
+				rec.inst.rF.rd = $2;
+				rec.inst.rF.rt = $6;
+				rec.inst.rF.shamt = 0;
+				rec.inst.rF.funct = FUNCT_SUB;
+				
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| XOR REGISTER ',' REGISTER ',' REGISTER
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = $4;
+				rec.inst.rF.rd = $2;
+				rec.inst.rF.rt = $6;
+				rec.inst.rF.shamt = 0;
+				rec.inst.rF.funct = FUNCT_XOR;
+				
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| XORI REGISTER ',' REGISTER ',' INTCONSTANT
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.iF.op = OP_XORI;
+				rec.inst.iF.rt = $2;
+				rec.inst.iF.rs = $4;
+				rec.inst.iF.imm = $6;
+				
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| LUI REGISTER ',' INTCONSTANT
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.iF.op = OP_LUI;
+				rec.inst.iF.rt = $2;
+				rec.inst.iF.rs = 0;
+				rec.inst.iF.imm = ($4 >> 16);
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| LUI REGISTER ',' IDENTIFIER
+		{
+			if ( ! pass1 )
+			{
+				unsigned int targAddr;
+				if ( !symtab.LookUp ( $4, targAddr) ) // If no such entry
+				{
+					cerr << red << "\nLine:" << setw(4) << lineno 
+						<< ", pass:" << setw(2)	<< (( pass1 )? 1 : 2) 
+						<< ", Undefined Identifier : " 
+						<< $4 << reset << "\n";
+					errorcount ++;
+				}
+				rec.inst.iF.op = OP_LUI;
+				rec.inst.iF.rt = $2;
+				rec.inst.iF.rs = 0;
+				rec.inst.iF.imm = (targAddr >> 16);
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| SLT REGISTER ',' REGISTER ',' REGISTER
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = $4;
+				rec.inst.rF.rt = $6;
+				rec.inst.rF.rd = $2;
+				rec.inst.rF.shamt = 0;
+				rec.inst.rF.funct = FUNCT_SLT;
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| SLTI REGISTER ',' REGISTER ',' INTCONSTANT
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.iF.op = OP_SLTI;
+				rec.inst.iF.rs = $4;
+				rec.inst.iF.rt = $2;
+				rec.inst.iF.imm = $6;
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| BEQ REGISTER ',' REGISTER ',' IDENTIFIER
+		{
+			if ( ! pass1 )
+			{
+				unsigned int targAddr;
+				if ( !symtab.LookUp ( $6, targAddr) ) // If no such entry
+				{
+					cerr << red << "\nLine:" << setw(4) << lineno 
+						<< ", pass:" << setw(2)	<< (( pass1 )? 1 : 2) 
+						<< ", Undefined Identifier : " 
+						<< $6 << reset << "\n";
+					errorcount ++;
+				}
+				
+				rec.inst.iF.op = OP_BEQ;
+				rec.inst.iF.rs = $2;
+				rec.inst.iF.rt = $4;
+				rec.inst.iF.imm = (targAddr - address - 4 ) / 4;
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| BGEZ REGISTER ',' IDENTIFIER
+		{
+			if ( ! pass1 )
+			{
+				unsigned int targAddr;
+				if ( !symtab.LookUp ( $4, targAddr) ) // If no such entry
+				{
+					cerr << red << "\nLine:" << setw(4) << lineno 
+						<< ", pass:" << setw(2)	<< (( pass1 )? 1 : 2) 
+						<< ", Undefined Identifier : " 
+						<< $4 << reset << "\n";
+					errorcount ++;
+				}
+				
+				rec.inst.iF.op = OP_ONE;
+				rec.inst.iF.rs = $2;
+				rec.inst.iF.rt = 1;	// Distinguishing key
+				rec.inst.iF.imm = (targAddr - address - 4 ) / 4;
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| BGTZ REGISTER ',' IDENTIFIER
+		{
+			if ( ! pass1 )
+			{
+				unsigned int targAddr;
+				if ( !symtab.LookUp ( $4, targAddr) ) // If no such entry
+				{
+					cerr << red << "\nLine:" << setw(4) << lineno 
+						<< ", pass:" << setw(2)	<< (( pass1 )? 1 : 2) 
+						<< ", Undefined Identifier : " 
+						<< $4 << reset << "\n";
+					errorcount ++;
+				}
+				
+				rec.inst.iF.op = OP_BGTZ;
+				rec.inst.iF.rs = $2;
+				rec.inst.iF.rt = 0;
+				rec.inst.iF.imm = (targAddr - address - 4 ) / 4;
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| BLEZ REGISTER ',' IDENTIFIER
+		{
+			if ( ! pass1 )
+			{
+				unsigned int targAddr;
+				if ( !symtab.LookUp ( $4, targAddr) ) // If no such entry
+				{
+					cerr << red << "\nLine:" << setw(4) << lineno 
+						<< ", pass:" << setw(2)	<< (( pass1 )? 1 : 2) 
+						<< ", Undefined Identifier : " 
+						<< $4 << reset << "\n";
+					errorcount ++;
+				}
+				
+				rec.inst.iF.op = OP_BLEZ;
+				rec.inst.iF.rs = $2;
+				rec.inst.iF.rt = 0;
+				rec.inst.iF.imm = (targAddr - address - 4 ) / 4;
+				
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| BLTZ REGISTER ',' IDENTIFIER
+		{
+			if ( ! pass1 )
+			{
+				unsigned int targAddr;
+				if ( !symtab.LookUp ( $4, targAddr) ) // If no such entry
+				{
+					cerr << red << "\nLine:" << setw(4) << lineno 
+						<< ", pass:" << setw(2)	<< (( pass1 )? 1 : 2) 
+						<< ", Undefined Identifier : " 
+						<< $4 << reset << "\n";
+					errorcount ++;
+				}
+				
+				rec.inst.iF.op = OP_ONE;
+				rec.inst.iF.rs = $2;
+				rec.inst.iF.rt = 0;	// Distinguishing key
+				rec.inst.iF.imm = (targAddr - address - 4 ) / 4;
+				
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| BNE REGISTER ',' REGISTER ',' IDENTIFIER
+		{
+			if ( ! pass1 )
+			{
+				unsigned int targAddr;
+				if ( !symtab.LookUp ( $6, targAddr) ) // If no such entry
+				{
+					cerr << red << "\nLine:" << setw(4) << lineno 
+						<< ", pass:" << setw(2)	<< (( pass1 )? 1 : 2) 
+						<< ", Undefined Identifier : " 
+						<< $6 << reset << "\n";
+					errorcount ++;
+				}
+				
+				rec.inst.iF.op = OP_BNE;
+				rec.inst.iF.rs = $2;
+				rec.inst.iF.rt = $4;
+				rec.inst.iF.imm = (targAddr - address - 4 ) / 4;
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| J INTCONSTANT
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.jF.op = OP_J;
+				rec.inst.jF.tAddr = $2 / 4;
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| J IDENTIFIER
+		{
+			if ( ! pass1 )
+			{
+				unsigned int targAddr;
+				if ( !symtab.LookUp ( $2, targAddr) ) // If no such entry
+				{
+					cerr << red << "\nLine:" << setw(4) << lineno 
+						<< ", pass:" << setw(2)	<< (( pass1 )? 1 : 2) 
+						<< ", Undefined Identifier : " 
+						<< $2 << reset << "\n";
+					errorcount ++;
+				}
+				
+				rec.inst.jF.op = OP_J;
+				rec.inst.jF.tAddr = targAddr / 4;
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| JAL INTCONSTANT
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.jF.op = OP_JAL;
+				rec.inst.jF.tAddr = $2 / 4;
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| JAL IDENTIFIER
+		{
+			if ( ! pass1 )
+			{
+				unsigned int targAddr;
+				if ( !symtab.LookUp ( $2, targAddr) ) // If no such entry
+				{
+					cerr << red << "\nLine:" << setw(4) << lineno 
+						<< ", pass:" << setw(2)	<< (( pass1 )? 1 : 2) 
+						<< ", Undefined Identifier : " 
+						<< $2 << reset << "\n";
+					errorcount ++;
+				}
+				
+				rec.inst.jF.op = OP_JAL;
+				rec.inst.jF.tAddr = targAddr / 4;
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| JALR	REGISTER ',' REGISTER
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = $2;
+				rec.inst.rF.rt = 0;
+				rec.inst.rF.rd = $4;
+				rec.inst.rF.shamt = 0;
+				rec.inst.rF.funct = FUNCT_JALR;
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| JR REGISTER
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = $2;
+				rec.inst.rF.rt = 0;
+				rec.inst.rF.rd = 0;
+				rec.inst.rF.shamt = 0;
+				rec.inst.rF.funct = FUNCT_JR;
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| LW REGISTER ',' INTCONSTANT '(' REGISTER ')'
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.iF.op = OP_LW;
+				rec.inst.iF.rs = $6;
+				rec.inst.iF.rt = $2;
+				rec.inst.iF.imm = $4;
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| SW REGISTER ',' INTCONSTANT '(' REGISTER ')'
+		{
+			if ( ! pass1 )
+			{
+				// Note that here rt contains the source and rs the
+				// destination... to conform to the same format as LW
+				rec.inst.iF.op = OP_SW;
+				rec.inst.iF.rs = $6;
+				rec.inst.iF.rt = $2;
+				rec.inst.iF.imm = $4;
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| MFHI REGISTER
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = 0;
+				rec.inst.rF.rt = 0;
+				rec.inst.rF.rd = $2;
+				rec.inst.rF.shamt = 0;
+				rec.inst.rF.funct = FUNCT_MFHI;
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| MFLO REGISTER
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = 0;
+				rec.inst.rF.rt = 0;
+				rec.inst.rF.rd = $2;
+				rec.inst.rF.shamt = 0;
+				rec.inst.rF.funct = FUNCT_MFLO;
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| MTHI REGISTER
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = $2;
+				rec.inst.rF.rt = 0;
+				rec.inst.rF.rd = 0;
+				rec.inst.rF.shamt = 0;
+				rec.inst.rF.funct = FUNCT_MTHI;
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| MTLO REGISTER
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = $2;
+				rec.inst.rF.rt = 0;
+				rec.inst.rF.rd = 0;
+				rec.inst.rF.shamt = 0;
+				rec.inst.rF.funct = FUNCT_MTLO;
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| SYSCALL
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = 0;
+				rec.inst.rF.rt = 0;
+				rec.inst.rF.rd = 0;
+				rec.inst.rF.shamt = 0;
+				rec.inst.rF.funct = FUNCT_SYSCALL;
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| NOP
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.iV = 0;	// The entire thing is zero
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| DIN	REGISTER ',' INTCONSTANT
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.iF.op = OP_DIN;
+				rec.inst.iF.rs = 0;
+				rec.inst.iF.rt = $2;
+				rec.inst.iF.imm = $4;
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| DOUT REGISTER ',' INTCONSTANT
+		{
+			if ( ! pass1 )
+			{
+				rec.inst.iF.op = OP_DOUT;
+				rec.inst.iF.rs = $2;
+				rec.inst.iF.rt = 0;
+				rec.inst.iF.imm = $4;
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| RDIN REGISTER ',' REGISTER 
+		{	// reg2 port, reg1 data destination
+			if ( ! pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = 0;
+				rec.inst.rF.rt = $4;
+				rec.inst.rF.rd = $2;
+				rec.inst.rF.shamt = 0;
+				rec.inst.rF.funct = FUNCT_RDIN;
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	| RDOUT REGISTER ',' REGISTER
+		{
+			// reg1 data source, reg2 port
+			if ( ! pass1 )
+			{
+				rec.inst.rF.op = OP_ZERO;
+				rec.inst.rF.rs = $2;
+				rec.inst.rF.rt = $4;
+				rec.inst.rF.rd = 0;
+				rec.inst.rF.shamt = 0;
+				rec.inst.rF.funct = FUNCT_RDOUT;
+			
+				rec.address = address;
+				ofile.write ( reinterpret_cast<char*>(&rec), size );
+			}
+			address += 4;
+		}
+	;
+
+%%
+
+int yyerror(char *str)
+{
+	cerr << red << "\nLine:" << setw(4) << lineno << ", pass:" << setw(2)
+		<< (( pass1 )? 1 : 2) << ", parser encountered error : " 
+		<< str << ", in the vicinity of token : " << yytext << reset << "\n";
+	errorcount ++;
+	return 0;
+}

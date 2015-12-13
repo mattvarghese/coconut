@@ -1,0 +1,61 @@
+ # Copyright 2005-2015 Varghese Mathew (Matt)
+ # 
+ # This file is part of Coconut (TM).
+ # Coconut is a
+ #     Multi-threaded simulation of the pipeline of a MIPS-like
+ #     Microprocessor (integer instructions only) replete with 
+ #     Memory Subsystem, Caches and their performance analysis,
+ #     I/O device modules and an assembler.
+ # 
+ # Coconut is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version.
+ # 
+ # Coconut is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ # 
+ # You should have received a copy of the GNU General Public License
+ # along with Coconut.  If not, see <http://www.gnu.org/licenses/>.
+ # 
+
+	begin	1000
+	start	1024
+ARR1	dw	[4]
+VAR1	dw	23
+VAR2	dw	19
+
+	addi	$s0, $zero, 1024
+	addi	$s1, $zero, 256
+	addi	$s2, $zero, -128
+	addi	$s3, $zero, -32
+	
+	sub	$t0, $s0, $s1		# 768
+	sub	$t1, $s0, $s2		# 1152
+	sub	$t2, $s2, $s0		# -1152
+	sub	$t3, $s2, $s3		# -96
+	
+	nop
+	nop
+	nop
+	
+	addi	$s0, $zero, 2389
+	addi	$s1, $zero, 6880
+	addi	$s2, $zero, -2342
+	addi	$s3, $zero, -4545
+	
+	xor	$t0, $s0, $s1		# 5045
+	xori	$t0, $s0, 6880		# 5045
+	
+	xor	$t1, $s0, $s2		# -113
+	xori	$t1, $s0, -2342		# -113
+	
+	xor	$t2, $s2, $s0		# -113
+	xori	$t2, $s2, 2389		# -113
+	
+	xor	$t3, $s2, $s3		# 6373
+	xori	$t3, $s2, -4545		# 6373
+	
+	end

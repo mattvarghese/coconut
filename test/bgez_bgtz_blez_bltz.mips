@@ -1,0 +1,86 @@
+ # Copyright 2005-2015 Varghese Mathew (Matt)
+ # 
+ # This file is part of Coconut (TM).
+ # Coconut is a
+ #     Multi-threaded simulation of the pipeline of a MIPS-like
+ #     Microprocessor (integer instructions only) replete with 
+ #     Memory Subsystem, Caches and their performance analysis,
+ #     I/O device modules and an assembler.
+ # 
+ # Coconut is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version.
+ # 
+ # Coconut is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ # 
+ # You should have received a copy of the GNU General Public License
+ # along with Coconut.  If not, see <http://www.gnu.org/licenses/>.
+ # 
+
+	begin	1000
+	start	1024
+ARR1	dw	[4]
+VAR1	dw	23
+VAR2	dw	19
+	
+	addi	$t0, $zero, 5
+	addi	$t1, $zero, -8
+	addi	$t2, $zero, 12
+	
+	bgez	$t0, LAB1		# taken
+	add	$s0, $t0, $t1		# not executed
+LAB1	bgez	$t1, LAB1		# infinite loop; not taken
+
+	bgez	$zero, LAB2		# taken, target is same as fall through
+LAB2	mult	$t1, $t2		# executed once
+
+	nop
+	nop
+	nop
+	nop
+
+	bgtz	$zero, LAB2		# infinite loop; not taken
+	
+	bgtz	$t0, LAB3		# taken
+	mflo	$s1			# not executed
+	mfhi	$s2			# not executed
+LAB3	
+	bgtz	$t1, LAB1		# not executed
+	
+	nop
+	nop
+	nop
+	nop
+	
+	blez	$t0, LAB3		# infinite loop; not taken
+	
+	blez	$zero, LAB4		# taken
+	sub	$s1, $t0, $t1		# not executed
+LAB4
+	blez	$t1, LAB5		# taken
+	lw	$s1, 0($zero)		# not executed
+LAB5
+	addi	$s1, $zero, VAR1	# executed
+	lui	$s1, VAR1		# executed
+	add	$s2, $zero, $s1		# executed
+	lw	$s1, 0($s1)		# executed
+	sw	$t1, 0($s2)		# executed
+	
+	nop
+	nop
+	nop
+	nop
+	
+	bltz	$zero, LAB5		# not taken
+	bltz	$t0, LAB1		# not taken
+	bltz	$t1, LAB6		# taken
+	addi	$ra, $zero, 123		# not executed
+	nor	$s3, $zero, $zero	# not executed
+	sub	$s4, $s3, $zero		# not executed
+LAB6	nor	$s5, $zero, $zero	# executed
+
+	end

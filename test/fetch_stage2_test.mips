@@ -1,0 +1,53 @@
+ # Copyright 2005-2015 Varghese Mathew (Matt)
+ # 
+ # This file is part of Coconut (TM).
+ # Coconut is a
+ #     Multi-threaded simulation of the pipeline of a MIPS-like
+ #     Microprocessor (integer instructions only) replete with 
+ #     Memory Subsystem, Caches and their performance analysis,
+ #     I/O device modules and an assembler.
+ # 
+ # Coconut is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version.
+ # 
+ # Coconut is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ # 
+ # You should have received a copy of the GNU General Public License
+ # along with Coconut.  If not, see <http://www.gnu.org/licenses/>.
+ # 
+
+	begin	1024
+	start	1024
+	j	MAIN
+MEM1	dw	65
+MEM2	dw	0
+MEM3	dw	2	# output device
+
+MAIN
+	addi	$t0, $zero, MEM1
+	lui	$t0, MEM1
+	
+	addi	$t1, $zero, MEM2
+	lui	$t1, MEM2
+	
+	lw	$t2, 0($t0)
+	sw	$t2, 0($t1)
+	
+	lw	$t2, 0($t0)
+	dout	$t2, 2
+	
+	addi	$t3, $zero, 2
+	lw	$t2, 0($t1)
+	rdout	$t2, $t3
+	
+	addi	$t4, $zero, MEM3
+	lui	$t4, MEM3
+	lw	$t3, 0($t4)
+	rdout	$t2, $t3
+	
+	end

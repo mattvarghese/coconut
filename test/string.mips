@@ -1,0 +1,42 @@
+ # Copyright 2005-2015 Varghese Mathew (Matt)
+ # 
+ # This file is part of Coconut (TM).
+ # Coconut is a
+ #     Multi-threaded simulation of the pipeline of a MIPS-like
+ #     Microprocessor (integer instructions only) replete with 
+ #     Memory Subsystem, Caches and their performance analysis,
+ #     I/O device modules and an assembler.
+ # 
+ # Coconut is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version.
+ # 
+ # Coconut is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ # 
+ # You should have received a copy of the GNU General Public License
+ # along with Coconut.  If not, see <http://www.gnu.org/licenses/>.
+ # 
+
+	begin	1024
+	start	1024
+	j	MAIN
+STR	dw	"This is an exhaustive test of\nThe system's\tString outputing capabilities"
+	dw	"\nThe system has successfully passed the test of \"capability\'"
+MAIN
+	addi	$s0, $zero, STR
+	lui	$s0, STR		# load the address of the string.
+	
+	addi	$s1, $zero, MAIN
+	lui	$s1, MAIN		# load the address of end of string.
+	
+LOOP	lw	$t1, 0($s0)
+	dout	$t1, 2
+	addi	$s0, $s0, 4
+	bne	$s0, $s1, LOOP
+	
+	
+	end
