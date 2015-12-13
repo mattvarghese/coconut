@@ -1,0 +1,4 @@
+*.output
+*.tab.*
+lexer.cpp
+*.o
