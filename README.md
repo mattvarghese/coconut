@@ -1,8 +1,12 @@
 # Coconut
 **Coconut** is a Multi-threaded simulation of the pipeline of a MIPS-like Microprocessor (integer instructions only) replete with Memory Subsystem, Caches and their performance analysis, I/O device modules and an assembler.
 
+See accompanying **project-report.pdf** for additional information.
+
 ## Copyright
 Copyright 2005-2015 **Varghese Mathew (Matt)**
+
+Coconut is distributed under the **GNU General Public License**. See License below.
 
 ## Acknowledgements
 The author expresses his heartfelt gratitude to **Prof. Dr. Priya Chandran** of the National Institute of Technology, Calicut, under whose guidance, this project first took shape.
