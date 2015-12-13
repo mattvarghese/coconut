@@ -2,11 +2,7 @@
 
 ## About
 
-**Coconut** is a
-> Multi-threaded simulation of the pipeline of a MIPS-like
-> Microprocessor (integer instructions only) replete with 
-> Memory Subsystem, Caches and their performance analysis,
-> I/O device modules and an assembler.
+**Coconut** is a Multi-threaded simulation of the pipeline of a MIPS-like Microprocessor (integer instructions only) replete with Memory Subsystem, Caches and their performance analysis, I/O device modules and an assembler.
 
 ## Copyright
 
@@ -16,7 +12,7 @@ Copyright 2005-2015 **Varghese Mathew (Matt)**
 
 > Coconut is free software: you can redistribute it and/or modify
 > it under the terms of the GNU General Public License as published by
-> > the Free Software Foundation, either version 3 of the License, or
+> the Free Software Foundation, either version 3 of the License, or
 > (at your option) any later version.
 > 
 > Coconut is distributed in the hope that it will be useful,
@@ -32,13 +28,13 @@ Copyright 2005-2015 **Varghese Mathew (Matt)**
 Contains the source for a simple assembler for the simulated processor.
 
 ### 'mips' directory
-Contains the source for the processor simulation, memory subsystem and Caches - the main source code of Coconut.
+Contains the source for the processor simulation, memory subsystem and caches - the main source code of Coconut.
 
 ### 'io' directory
 Contains the source for three simple i/o devices
-1. A simple keyboard.
-2. A simple screen ( a character terminal ).
-3. A dumbterminal consisting of a simple screen and a simple keyboard.
+ 1. A simple keyboard.
+ 2. A simple screen ( a character terminal ).
+ 3. A dumbterminal consisting of a simple screen and a simple keyboard.
 
 ### 'include' directory
 Contains the header files that are made use of in all of the above three sources
