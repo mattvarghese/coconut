@@ -33,13 +33,12 @@ The distribution has been tested and verified under the following platforms
  2. Ubuntu / Linux 15.10 x64
  3. Ubuntu MATE / Linux 15.10 armhf on Raspberry Pi 2
 
-To use the distribution, move into the 'test' directory and run 'make' if your terminal doesn't support colors, remove the flag *'-D__WITH_COLOR'* from each of the files 'mips/Makefile', 'asm/Makefile', 'io/Makefile'
+To use the distribution, **move into the 'test' directory** and run 'make'. If your terminal doesn't support colors, remove the flag *'-D__WITH_COLOR'* from each of the files 'mips/Makefile', 'asm/Makefile', 'io/Makefile'
 
-Once the compilation completes without errors, run 
+Once the compilation completes without errors, run (Note - the file MUST be named a.out for Coconut to bootload it.)
 > ./asm a.out {.mips file}
 
-to assemble a mips program for use by the simulatedprocessor. or if you get annoyed by the flood of output when assembling, issue the command as
-> ./asm a.out {.mips file} > /dev/null
+to assemble a mips program for use by the simulatedprocessor.
 
 Then on one virtual terminal (xterm) run 
 > ./dumbterminal
@@ -47,7 +46,7 @@ Then on one virtual terminal (xterm) run
 and on another run 
 > ./coconut
 
-'./coconut' asks you to first pick the caches. then it brings you to the a prompt 
+'./coconut' asks you to first pick the caches. Then it brings you to the a prompt 
 > mips > 
 
 where you need to issue commands. The following commands are supported
