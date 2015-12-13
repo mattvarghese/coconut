@@ -40,7 +40,7 @@ To use the distribution, **move into the 'test' directory** and run 'make'. If y
 Once the compilation completes without errors, run (Note - the file MUST be named a.out for Coconut to bootload it.)
 > ./asm a.out {.mips file}
 
-to assemble a mips program for use by the simulatedprocessor.
+to assemble a mips program for use by the simulated processor.
 
 Then on one virtual terminal (xterm) run 
 > ./dumbterminal
