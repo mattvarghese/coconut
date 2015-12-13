@@ -62,6 +62,8 @@ where you need to issue commands. The following commands are supported
  10. 'b {breakpoint no.} {break address}' set one of the 0-15 breakpoints. To unset a breakpoint, set its address as -1.
  11. 'B' view all breakpoints.
 
+When closing the simulator, make sure to first quit out of Coconut by entering 'q' at the 'mips >' prompt, before you close 'dumbterminal' (using Ctrl+C). Otherwise, you may have to wait a bit before the socets that the terminal binds to are released, before the 'dumbterminal' can bind to them again. 
+
 Note: An example of virtual terminal mentioned above is an 'xterm' window. Howevr, you can use any terminal.
 
 ## Distribution Structure
