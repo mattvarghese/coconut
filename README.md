@@ -33,7 +33,7 @@ You need to have 'c++', 'flex', 'bison' and 'POSIX' libraries installed on your 
 The distribution has been tested and verified under the following platforms
  1. Redhat / linux 9 x86
  2. Ubuntu / Linux 15.10 x64
- 3. Ubuntu MATE / Linux 15.10 armhf on Raspberry Pi 2
+ 3. Ubuntu MATE / Linux 15.10 armhf on **Raspberry Pi 2**
 
 To use the distribution, **move into the 'test' directory** and run 'make'. If your terminal doesn't support colors, remove the flag *'-D__WITH_COLOR'* from each of the files 'mips/Makefile', 'asm/Makefile', 'io/Makefile'
 
@@ -65,6 +65,8 @@ where you need to issue commands. The following commands are supported
  11. 'B' view all breakpoints.
 
 When closing the simulator, make sure to first quit out of Coconut by entering 'q' at the 'mips >' prompt, before you close 'dumbterminal' (using Ctrl+C). Otherwise, you may have to wait a bit before the sockets that the terminal binds to are released, before the 'dumbterminal' can bind to them again. 
+
+To cleanup the compile, run 'make distclean' from the 'test/' folder, and remove any 'a.out' file.
 
 Note: An example of virtual terminal mentioned above is an 'xterm' window. Howevr, you can use any terminal.
 
