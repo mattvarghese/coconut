@@ -1,0 +1,1190 @@
+*******************************************************************************
+Output from the main virtual terminal
+*******************************************************************************
+
+ubuntu@ubuntu-rpi2:~$ cd mini-project/test/
+ubuntu@ubuntu-rpi2:~/mini-project/test$ ls
+add_addi.mips             fact_old.mips           nor_or_ori.mips
+and_andi.mips             fetch_stage2_test.mips  printint.mips
+beq_branch.mips           helloworld.mips         shift_left_right.mips
+bgez_bgtz_blez_bltz.mips  j_jr_jal_jalr.mips      string.mips
+bne_branch.mips           lui_slt_slti.mips       sub_xor_xori.mips
+din_dout_rdin_rdout.mips  Makefile                sum.mips
+fact.mips                 mult_div.mips           syscall_instruction.mips
+ubuntu@ubuntu-rpi2:~/mini-project/test$ make
+
+Making 'mips'...
+cd ../mips/; echo ; make
+
+make[1]: Entering directory '/home/ubuntu/mini-project/mips'
+g++ -g -Wsign-promo -Wold-style-cast -Wabi -D__WITH_COLOR -c main.cpp
+main.cpp: In function ‘int main()’:
+main.cpp:65:43: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+  if( ! mem -> Load_MIPS_program ( "a.out" ) )
+                                           ^
+main.cpp:76:41: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+  dc = pickCache ( mem, false, "DATA", 1 ); // Multilevels are allowed
+                                         ^
+main.cpp:80:48: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+  ic = pickCache ( mem, false, "INSTRUCTION", 1 ); // Multilevels are allowed
+                                                ^
+g++ -g -Wsign-promo -Wold-style-cast -Wabi -D__WITH_COLOR -c memory.cpp
+g++ -g -Wsign-promo -Wold-style-cast -Wabi -D__WITH_COLOR -c simple_cache.cpp	
+g++ -g -Wsign-promo -Wold-style-cast -Wabi -D__WITH_COLOR -c portmanager.cpp
+g++ -g -Wsign-promo -Wold-style-cast -Wabi -D__WITH_COLOR -c processor.cpp
+g++ -g -Wsign-promo -Wold-style-cast -Wabi -D__WITH_COLOR -c pclock.cpp
+g++ -g -Wsign-promo -Wold-style-cast -Wabi -D__WITH_COLOR -c pstage0.cpp
+g++ -g -Wsign-promo -Wold-style-cast -Wabi -D__WITH_COLOR -c pstage1.cpp
+g++ -g -Wsign-promo -Wold-style-cast -Wabi -D__WITH_COLOR -c pstage2.cpp
+g++ -g -Wsign-promo -Wold-style-cast -Wabi -D__WITH_COLOR -c pstage3.cpp
+g++ -g -Wsign-promo -Wold-style-cast -Wabi -D__WITH_COLOR -c pstage4.cpp
+g++ -g -Wsign-promo -Wold-style-cast -Wabi -D__WITH_COLOR -c latch.cpp
+g++ -g -Wsign-promo -Wold-style-cast -Wabi -D__WITH_COLOR -o ../test/coconut\
+	main.o memory.o simple_cache.o portmanager.o processor.o pclock.o\
+	pstage0.o pstage1.o pstage2.o pstage3.o pstage4.o latch.o -lpthread
+make[1]: Leaving directory '/home/ubuntu/mini-project/mips'
+
+Making 'asm'...
+cd ../asm/; echo ; make
+
+make[1]: Entering directory '/home/ubuntu/mini-project/asm'
+bison -dtv asm.ypp
+g++ -g -Wsign-promo -Wabi -D__WITH_COLOR -c asm.tab.cpp
+asm.tab.cpp: In function ‘int yyparse()’:
+asm.tab.cpp:2567:35: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+       yyerror (YY_("syntax error"));
+                                   ^
+asm.tab.cpp:2711:35: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+   yyerror (YY_("memory exhausted"));
+                                   ^
+flex -olexer.cpp lexer.lex
+g++ -g -Wsign-promo -Wabi -D__WITH_COLOR -c lexer.cpp
+g++ -g -Wsign-promo -Wabi -D__WITH_COLOR -c main.cpp
+g++ -g -Wsign-promo -Wabi -D__WITH_COLOR -c structures.cpp
+g++ -g -Wsign-promo -Wabi -D__WITH_COLOR -o ../test/asm\
+	asm.tab.o lexer.o main.o structures.o -lfl
+g++ -g -Wsign-promo -Wabi -D__WITH_COLOR -o ../test/check check.cpp
+make[1]: Leaving directory '/home/ubuntu/mini-project/asm'
+
+Making 'io'...
+cd ../io/; echo ; make
+
+make[1]: Entering directory '/home/ubuntu/mini-project/io'
+g++ -g -Wold-style-cast -Wsign-promo -Wabi -D__WITH_COLOR\
+	-o ../test/dumbterminal dumbterminal.cpp -lpthread
+g++ -g -Wold-style-cast -Wsign-promo -Wabi -D__WITH_COLOR\
+	-o ../test/simplescreen simplescreen.cpp -lpthread
+g++ -g -Wold-style-cast -Wsign-promo -Wabi -D__WITH_COLOR\
+	-o ../test/simplekeyboard simplekeyboard.cpp -lpthread
+make[1]: Leaving directory '/home/ubuntu/mini-project/io'
+
+ubuntu@ubuntu-rpi2:~/mini-project/test$ ls
+add_addi.mips             dumbterminal            nor_or_ori.mips
+and_andi.mips             fact.mips               printint.mips
+asm                       fact_old.mips           shift_left_right.mips
+beq_branch.mips           fetch_stage2_test.mips  simplekeyboard
+bgez_bgtz_blez_bltz.mips  helloworld.mips         simplescreen
+bne_branch.mips           j_jr_jal_jalr.mips      string.mips
+check                     lui_slt_slti.mips       sub_xor_xori.mips
+coconut                   Makefile                sum.mips
+din_dout_rdin_rdout.mips  mult_div.mips           syscall_instruction.mips
+ubuntu@ubuntu-rpi2:~/mini-project/test$ ./asm a.out helloworld.mips 
+
+Starting pass 1 ... 
+ # Copyright 2005-2015 Varghese Mathew (Matt) 
+ #  
+ # This file is part of Coconut (TM). 
+ # Coconut is a 
+ #     Multi-threaded simulation of the pipeline of a MIPS-like 
+ #     Microprocessor (integer instructions only) replete with  
+ #     Memory Subsystem, Caches and their performance analysis, 
+ #     I/O device modules and an assembler. 
+ #  
+ # Coconut is free software: you can redistribute it and/or modify 
+ # it under the terms of the GNU General Public License as published by 
+ # the Free Software Foundation, either version 3 of the License, or 
+ # (at your option) any later version. 
+ #  
+ # Coconut is distributed in the hope that it will be useful, 
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+ # GNU General Public License for more details. 
+ #  
+ # You should have received a copy of the GNU General Public License 
+ # along with Coconut.  If not, see <http://www.gnu.org/licenses/>. 
+ #  
+ 
+ begin 1024 
+ start 1024 
+ j MAIN 
+ STR dw "Hello World!
+" 
+ MAIN 
+ addi $s0 , $zero , STR 
+ lui $s0 , STR # load the address of the string. 
+ 
+ addi $s1 , $zero , MAIN 
+ lui $s1 , MAIN # load the address of end of string. 
+ 
+ LOOP lw $t1 , 0 ( $s0 ) 
+ dout $t1 , 2 
+ addi $s0 , $s0 , 4 
+ bne $s0 , $s1 , LOOP 
+ 
+ 
+ end 
+
+Starting pass 2 ... 
+ # Copyright 2005-2015 Varghese Mathew (Matt) 
+ #  
+ # This file is part of Coconut (TM). 
+ # Coconut is a 
+ #     Multi-threaded simulation of the pipeline of a MIPS-like 
+ #     Microprocessor (integer instructions only) replete with  
+ #     Memory Subsystem, Caches and their performance analysis, 
+ #     I/O device modules and an assembler. 
+ #  
+ # Coconut is free software: you can redistribute it and/or modify 
+ # it under the terms of the GNU General Public License as published by 
+ # the Free Software Foundation, either version 3 of the License, or 
+ # (at your option) any later version. 
+ #  
+ # Coconut is distributed in the hope that it will be useful, 
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+ # GNU General Public License for more details. 
+ #  
+ # You should have received a copy of the GNU General Public License 
+ # along with Coconut.  If not, see <http://www.gnu.org/licenses/>. 
+ #  
+ 
+ begin 1024 
+ start 1024 
+ j MAIN 
+ STR dw "Hello World!
+" 
+ MAIN 
+ addi $s0 , $zero , STR 
+ lui $s0 , STR # load the address of the string. 
+ 
+ addi $s1 , $zero , MAIN 
+ lui $s1 , MAIN # load the address of end of string. 
+ 
+ LOOP lw $t1 , 0 ( $s0 ) 
+ dout $t1 , 2 
+ addi $s0 , $s0 , 4 
+ bne $s0 , $s1 , LOOP 
+ 
+ 
+ end 
+
+Displaying the symbol table ... 
+LOOP : 1096
+MAIN : 1080
+STR : 1028
+ubuntu@ubuntu-rpi2:~/mini-project/test$ ./coconut 
+
+Choose the type of cache you want for Data
+1-level DATA Cache : The choices available are
+ 1. No Cache 
+ 2. Simple single level FIFO writeback cache 
+ 3. Multilevel Cache 
+Please enter your choice : 1
+
+Choose the type of cache you want for Instructions
+1-level INSTRUCTION Cache : The choices available are
+ 1. No Cache 
+ 2. Simple single level FIFO writeback cache 
+ 3. Multilevel Cache 
+Please enter your choice : 1
+
+[ PortManager :: AddPort ] Connected Device 1 to socket 5678 successfully
+[ PortManager :: AddPort ] Connected Device 2 to socket 5680 successfully
+[** Clock: 0 **] Executed...
+
+mips > n
+
+[ Stage2 ] NOP
+[ Stage3 ] NOP
+[__ PC_update_control __] NPC updated by stage 0 to 1028
+[ Stage0 ] PC to fetch = 1024, Instruction = 17282
+[ Stage1 ] NOP
+[ Stage4 ] NOP
+[** Clock: 1 **] Executed...
+
+mips > n
+
+[__ PC_update_control __] NPC updated by stage 0 to 1032
+[ Stage0 ] PC to fetch = 1028, Instruction = 72
+[ Stage3 ] NOP
+[ Stage4 ] NOP
+[ Stage2 ] NOP
+[__ PC_update_control __] NPC updated by stage 1 to 1080
+[ Stage1:UpdatePC ] updated NPC with absolute address
+[ Stage1 ] J (jump) to absolute address 1080
+[** Clock: 2 **] Executed...
+[** Clock: 2 **] Flushing stage 0
+
+mips > c 85
+
+[__ PC_update_control __] NPC updated by stage 0 to 1084
+[ Stage0 ] PC to fetch = 1080, Instruction = 67403784
+[ Stage2 ] J idle
+[ Stage3 ] NOP
+[ Stage4 ] NOP
+[ Stage1 ] NOP
+[** Clock: 3 **] Executed...
+
+[ Stage4 ] NOP
+[ Stage1:RegisterFetch ] Register $zero is always 0
+[ Stage1:RegisterFetch ] A = 0
+[ Stage1 ] ADDI r0 + imm 1028 -> r16
+[ Stage3 ] J idle
+[__ PC_update_control __] NPC updated by stage 0 to 1088
+[ Stage0 ] PC to fetch = 1084, Instruction = 32783
+[ Stage2 ] NOP
+[** Clock: 4 **] Executed...
+
+[ Stage4 ] J idle
+[ Stage3 ] NOP
+[ Stage2 ] ADDI ALUOutput = 1028
+[ Stage1:RegisterFetch ] Result from current EX - ALUOutput
+[ Stage1:RegisterFetch ] B = 1028
+[ Stage1 ] LUI imm0 -> upper_16( r16 ) 
+[__ PC_update_control __] NPC updated by stage 0 to 1092
+[ Stage0 ] PC to fetch = 1088, Instruction = 70813704
+[** Clock: 5 **] Executed...
+
+[ Stage4 ] NOP
+[ Stage2 ] LUI ALUOutput = 1028
+[ Stage3 ] ADDI idle
+[__ PC_update_control __] NPC updated by stage 0 to 1096
+[ Stage0 ] PC to fetch = 1092, Instruction = 34831
+[ Stage1:RegisterFetch ] Register $zero is always 0
+[ Stage1:RegisterFetch ] A = 0
+[ Stage1 ] ADDI r0 + imm 1080 -> r17
+[** Clock: 6 **] Executed...
+
+[ Stage3 ] LUI idle
+[ Stage2 ] ADDI ALUOutput = 1080
+[ Stage4:RegisterWrite ] writing value 1028 to register r16
+[ Stage4 ] ADDI stored 1028 into r16
+[__ PC_update_control __] NPC updated by stage 0 to 1100
+[ Stage0 ] PC to fetch = 1096, Instruction = 19491
+[ Stage1:RegisterFetch ] Result from current EX - ALUOutput
+[ Stage1:RegisterFetch ] B = 1080
+[ Stage1 ] LUI imm0 -> upper_16( r17 ) 
+[** Clock: 7 **] Executed...
+
+[ Stage3 ] ADDI idle
+[ Stage2 ] LUI ALUOutput = 1080
+[ Stage4:RegisterWrite ] writing value 1028 to register r16
+[ Stage4 ] LUI stored 1028 into r16
+[__ PC_update_control __] NPC updated by stage 0 to 1104
+[ Stage0 ] PC to fetch = 1100, Instruction = 131710
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1028
+[ Stage1 ] LW Memory[0 + (r16)] -> r9
+[** Clock: 8 **] Executed...
+
+[ Stage2 ] LW ALUOutput / Memory address = 1028
+[ Stage3 ] LUI idle
+[ Stage4:RegisterWrite ] writing value 1080 to register r17
+[ Stage4 ] ADDI stored 1080 into r17
+[__ PC_update_control __] NPC updated by stage 0 to 1108
+[ Stage0 ] PC to fetch = 1104, Instruction = 295944
+[ Stage1:RegisterFetch ] Result unavailable
+[ Stage1:RegisterFetch ] will forward while in Stage2
+[ Stage1 ] DOUT write to device 2 contents of r9
+[** Clock: 9 **] Executed...
+
+[ Stage3 ] LW read value = 72 from address 1028
+[ Stage2:RegisterFetch ] Result from current MEM - LMD
+[ Stage2:RegisterFetch ] A = 72
+[ Stage2 ] DOUT idle
+[ Stage4:RegisterWrite ] writing value 1080 to register r17
+[ Stage4 ] LUI stored 1080 into r17
+[__ PC_update_control __] NPC updated by stage 0 to 1112
+[ Stage0 ] PC to fetch = 1108, Instruction = -226299
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1028
+[ Stage1 ] ADDI r16 + imm 4 -> r16
+[** Clock: 10 **] Executed...
+
+[ PortManager :: Write ] Wrote word to Device 2
+[ Stage3 ] DOUT wrote value = 72 to device 2
+[ Stage4:RegisterWrite ] writing value 72 to register r9
+[ Stage4 ] LW stored 72 into r9
+[ Stage2 ] ADDI ALUOutput = 1032
+[__ PC_update_control __] NPC updated by stage 0 to 1116
+[ Stage0 ] PC to fetch = 1112, Instruction = 0
+[ Stage1:RegisterFetch ] Result from current EX - ALUOutput
+[ Stage1:RegisterFetch ] A = 1032
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] B = 1080
+[ Stage1 ] BNE r16, r17 to relative address -16
+[** Clock: 11 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 2 to 1096
+[ Stage2:UpdatePC ] updated NPC with relative address
+[ Stage2 ] BNE jumping to relative address -16
+[ Stage4 ] DOUT idle
+[ Stage3 ] ADDI idle
+[__ PC_update_control __] NPC update by stage 0 aborted
+[ Stage0 ] PC to fetch = 1116, Instruction = 0
+[ Stage1 ] NOP
+[** Clock: 12 **] Executed...
+[** Clock: 12 **] Flushing stage 0
+[** Clock: 12 **] Flushing stage 1
+
+[ Stage4:RegisterWrite ] writing value 1032 to register r16
+[ Stage4 ] ADDI stored 1032 into r16
+[ Stage2 ] NOP
+[ Stage3 ] BNE idle
+[__ PC_update_control __] NPC updated by stage 0 to 1100
+[ Stage0 ] PC to fetch = 1096, Instruction = 19491
+[ Stage1 ] NOP
+[** Clock: 13 **] Executed...
+
+[ Stage3 ] NOP
+[ Stage2 ] NOP
+[ Stage4 ] BNE idle
+[__ PC_update_control __] NPC updated by stage 0 to 1104
+[ Stage0 ] PC to fetch = 1100, Instruction = 131710
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1032
+[ Stage1 ] LW Memory[0 + (r16)] -> r9
+[** Clock: 14 **] Executed...
+
+[ Stage3 ] NOP
+[ Stage2 ] LW ALUOutput / Memory address = 1032
+[ Stage4 ] NOP
+[__ PC_update_control __] NPC updated by stage 0 to 1108
+[ Stage0 ] PC to fetch = 1104, Instruction = 295944
+[ Stage1:RegisterFetch ] Result unavailable
+[ Stage1:RegisterFetch ] will forward while in Stage2
+[ Stage1 ] DOUT write to device 2 contents of r9
+[** Clock: 15 **] Executed...
+
+[ Stage3 ] LW read value = 101 from address 1032
+[ Stage4 ] NOP
+[ Stage2:RegisterFetch ] Result from current MEM - LMD
+[ Stage2:RegisterFetch ] A = 101
+[ Stage2 ] DOUT idle
+[__ PC_update_control __] NPC updated by stage 0 to 1112
+[ Stage0 ] PC to fetch = 1108, Instruction = -226299
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1032
+[ Stage1 ] ADDI r16 + imm 4 -> r16
+[** Clock: 16 **] Executed...
+
+[ PortManager :: Write ] Wrote word to Device 2
+[ Stage3 ] DOUT wrote value = 101 to device 2
+[ Stage4:RegisterWrite ] writing value 101 to register r9
+[ Stage4 ] LW stored 101 into r9
+[ Stage2 ] ADDI ALUOutput = 1036
+[__ PC_update_control __] NPC updated by stage 0 to 1116
+[ Stage0 ] PC to fetch = 1112, Instruction = 0
+[ Stage1:RegisterFetch ] Result from current EX - ALUOutput
+[ Stage1:RegisterFetch ] A = 1036
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] B = 1080
+[ Stage1 ] BNE r16, r17 to relative address -16
+[** Clock: 17 **] Executed...
+
+[ Stage3 ] ADDI idle
+[__ PC_update_control __] NPC updated by stage 2 to 1096
+[ Stage2:UpdatePC ] updated NPC with relative address
+[ Stage2 ] BNE jumping to relative address -16
+[ Stage4 ] DOUT idle
+[__ PC_update_control __] NPC update by stage 0 aborted
+[ Stage0 ] PC to fetch = 1116, Instruction = 0
+[ Stage1 ] NOP
+[** Clock: 18 **] Executed...
+[** Clock: 18 **] Flushing stage 0
+[** Clock: 18 **] Flushing stage 1
+
+[ Stage3 ] BNE idle
+[ Stage4:RegisterWrite ] writing value 1036 to register r16
+[ Stage4 ] ADDI stored 1036 into r16
+[ Stage2 ] NOP
+[__ PC_update_control __] NPC updated by stage 0 to 1100
+[ Stage0 ] PC to fetch = 1096, Instruction = 19491
+[ Stage1 ] NOP
+[** Clock: 19 **] Executed...
+
+[ Stage3 ] NOP
+[ Stage2 ] NOP
+[ Stage4 ] BNE idle
+[__ PC_update_control __] NPC updated by stage 0 to 1104
+[ Stage0 ] PC to fetch = 1100, Instruction = 131710
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1036
+[ Stage1 ] LW Memory[0 + (r16)] -> r9
+[** Clock: 20 **] Executed...
+
+[ Stage3 ] NOP
+[ Stage2 ] LW ALUOutput / Memory address = 1036
+[ Stage4 ] NOP
+[__ PC_update_control __] NPC updated by stage 0 to 1108
+[ Stage0 ] PC to fetch = 1104, Instruction = 295944
+[ Stage1:RegisterFetch ] Result unavailable
+[ Stage1:RegisterFetch ] will forward while in Stage2
+[ Stage1 ] DOUT write to device 2 contents of r9
+[** Clock: 21 **] Executed...
+
+[ Stage3 ] LW read value = 108 from address 1036
+[ Stage4 ] NOP
+[ Stage2:RegisterFetch ] Result from current MEM - LMD
+[ Stage2:RegisterFetch ] A = 108
+[ Stage2 ] DOUT idle
+[__ PC_update_control __] NPC updated by stage 0 to 1112
+[ Stage0 ] PC to fetch = 1108, Instruction = -226299
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1036
+[ Stage1 ] ADDI r16 + imm 4 -> r16
+[** Clock: 22 **] Executed...
+
+[ PortManager :: Write ] Wrote word to Device 2
+[ Stage3 ] DOUT wrote value = 108 to device 2
+[ Stage4:RegisterWrite ] writing value 108 to register r9
+[ Stage4 ] LW stored 108 into r9
+[ Stage2 ] ADDI ALUOutput = 1040
+[__ PC_update_control __] NPC updated by stage 0 to 1116
+[ Stage0 ] PC to fetch = 1112, Instruction = 0
+[ Stage1:RegisterFetch ] Result from current EX - ALUOutput
+[ Stage1:RegisterFetch ] A = 1040
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] B = 1080
+[ Stage1 ] BNE r16, r17 to relative address -16
+[** Clock: 23 **] Executed...
+
+[ Stage3 ] ADDI idle
+[ Stage4 ] DOUT idle
+[__ PC_update_control __] NPC updated by stage 2 to 1096
+[ Stage2:UpdatePC ] updated NPC with relative address
+[ Stage2 ] BNE jumping to relative address -16
+[__ PC_update_control __] NPC update by stage 0 aborted
+[ Stage0 ] PC to fetch = 1116, Instruction = 0
+[ Stage1 ] NOP
+[** Clock: 24 **] Executed...
+[** Clock: 24 **] Flushing stage 0
+[** Clock: 24 **] Flushing stage 1
+
+[ Stage3 ] BNE idle
+[ Stage4:RegisterWrite ] writing value 1040 to register r16
+[ Stage4 ] ADDI stored 1040 into r16
+[ Stage2 ] NOP
+[__ PC_update_control __] NPC updated by stage 0 to 1100
+[ Stage0 ] PC to fetch = 1096, Instruction = 19491
+[ Stage1 ] NOP
+[** Clock: 25 **] Executed...
+
+[ Stage3 ] NOP
+[ Stage4 ] BNE idle
+[ Stage2 ] NOP
+[__ PC_update_control __] NPC updated by stage 0 to 1104
+[ Stage0 ] PC to fetch = 1100, Instruction = 131710
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1040
+[ Stage1 ] LW Memory[0 + (r16)] -> r9
+[** Clock: 26 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 0 to 1108
+[ Stage0 ] PC to fetch = 1104, Instruction = 295944
+[ Stage3 ] NOP
+[ Stage4 ] NOP
+[ Stage2 ] LW ALUOutput / Memory address = 1040
+[ Stage1:RegisterFetch ] Result unavailable
+[ Stage1:RegisterFetch ] will forward while in Stage2
+[ Stage1 ] DOUT write to device 2 contents of r9
+[** Clock: 27 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 0 to 1112
+[ Stage0 ] PC to fetch = 1108, Instruction = -226299
+[ Stage4 ] NOP
+[ Stage3 ] LW read value = 108 from address 1040
+[ Stage2:RegisterFetch ] Result from current MEM - LMD
+[ Stage2:RegisterFetch ] A = 108
+[ Stage2 ] DOUT idle
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1040
+[ Stage1 ] ADDI r16 + imm 4 -> r16
+[** Clock: 28 **] Executed...
+
+[ Stage2 ] ADDI ALUOutput = 1044
+[ Stage1:RegisterFetch ] Result from current EX - ALUOutput
+[ Stage1:RegisterFetch ] A = 1044
+[ Stage4:RegisterWrite ] writing value 108 to register r9
+[ Stage4 ] LW stored 108 into r9
+[ PortManager :: Write ] Wrote word to Device 2
+[ Stage3 ] DOUT wrote value = 108 to device 2
+[__ PC_update_control __] NPC updated by stage 0 to 1116
+[ Stage0 ] PC to fetch = 1112, Instruction = 0
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] B = 1080
+[ Stage1 ] BNE r16, r17 to relative address -16
+[** Clock: 29 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 0 to 1120
+[ Stage0 ] PC to fetch = 1116, Instruction = 0
+[ Stage1 ] NOP
+[ Stage3 ] ADDI idle
+[__ PC_update_control __] NPC updated by stage 2 to 1096
+[ Stage2:UpdatePC ] updated NPC with relative address
+[ Stage2 ] BNE jumping to relative address -16
+[ Stage4 ] DOUT idle
+[** Clock: 30 **] Executed...
+[** Clock: 30 **] Flushing stage 0
+[** Clock: 30 **] Flushing stage 1
+
+[__ PC_update_control __] NPC updated by stage 0 to 1100
+[ Stage0 ] PC to fetch = 1096, Instruction = 19491
+[ Stage4:RegisterWrite ] writing value 1044 to register r16
+[ Stage4 ] ADDI stored 1044 into r16
+[ Stage3 ] BNE idle
+[ Stage2 ] NOP
+[ Stage1 ] NOP
+[** Clock: 31 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 0 to 1104
+[ Stage0 ] PC to fetch = 1100, Instruction = 131710
+[ Stage4 ] BNE idle
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1044
+[ Stage1 ] LW Memory[0 + (r16)] -> r9
+[ Stage3 ] NOP
+[ Stage2 ] NOP
+[** Clock: 32 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 0 to 1108
+[ Stage0 ] PC to fetch = 1104, Instruction = 295944
+[ Stage4 ] NOP
+[ Stage1:RegisterFetch ] Result unavailable
+[ Stage1:RegisterFetch ] will forward while in Stage2
+[ Stage1 ] DOUT write to device 2 contents of r9
+[ Stage3 ] NOP
+[ Stage2 ] LW ALUOutput / Memory address = 1044
+[** Clock: 33 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 0 to 1112
+[ Stage0 ] PC to fetch = 1108, Instruction = -226299
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1044
+[ Stage1 ] ADDI r16 + imm 4 -> r16
+[ Stage4 ] NOP
+[ Stage3 ] LW read value = 111 from address 1044
+[ Stage2:RegisterFetch ] Result from current MEM - LMD
+[ Stage2:RegisterFetch ] A = 111
+[ Stage2 ] DOUT idle
+[** Clock: 34 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 0 to 1116
+[ Stage0 ] PC to fetch = 1112, Instruction = 0
+[ Stage4:RegisterWrite ] writing value 111 to register r9
+[ Stage4 ] LW stored 111 into r9
+[ PortManager :: Write ] Wrote word to Device 2
+[ Stage3 ] DOUT wrote value = 111 to device 2
+[ Stage1:RegisterFetch ] Result from current EX - ALUOutput
+[ Stage1:RegisterFetch ] A = 1048
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] B = 1080
+[ Stage2 ] ADDI ALUOutput = 1048
+[ Stage1 ] BNE r16, r17 to relative address -16
+[** Clock: 35 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 0 to 1120
+[ Stage0 ] PC to fetch = 1116, Instruction = 0
+[ Stage1 ] NOP
+[ Stage3 ] ADDI idle
+[__ PC_update_control __] NPC updated by stage 2 to 1096
+[ Stage2:UpdatePC ] updated NPC with relative address
+[ Stage2 ] BNE jumping to relative address -16
+[ Stage4 ] DOUT idle
+[** Clock: 36 **] Executed...
+[** Clock: 36 **] Flushing stage 0
+[** Clock: 36 **] Flushing stage 1
+
+[__ PC_update_control __] NPC updated by stage 0 to 1100
+[ Stage0 ] PC to fetch = 1096, Instruction = 19491
+[ Stage4:RegisterWrite ] writing value 1048 to register r16
+[ Stage4 ] ADDI stored 1048 into r16
+[ Stage3 ] BNE idle
+[ Stage2 ] NOP
+[ Stage1 ] NOP
+[** Clock: 37 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 0 to 1104
+[ Stage0 ] PC to fetch = 1100, Instruction = 131710
+[ Stage4 ] BNE idle
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1048
+[ Stage1 ] LW Memory[0 + (r16)] -> r9
+[ Stage3 ] NOP
+[ Stage2 ] NOP
+[** Clock: 38 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 0 to 1108
+[ Stage0 ] PC to fetch = 1104, Instruction = 295944
+[ Stage4 ] NOP
+[ Stage1:RegisterFetch ] Result unavailable
+[ Stage1:RegisterFetch ] will forward while in Stage2
+[ Stage2 ] LW ALUOutput / Memory address = 1048
+[ Stage1 ] DOUT write to device 2 contents of r9
+[ Stage3 ] NOP
+[** Clock: 39 **] Executed...
+
+[ Stage4 ] NOP
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1048
+[ Stage2:RegisterFetch ] Result from current MEM - LMD
+[ Stage2:RegisterFetch ] A = 32
+[ Stage2 ] DOUT idle
+[ Stage1 ] ADDI r16 + imm 4 -> r16
+[ Stage3 ] LW read value = 32 from address 1048
+[__ PC_update_control __] NPC updated by stage 0 to 1112
+[ Stage0 ] PC to fetch = 1108, Instruction = -226299
+[** Clock: 40 **] Executed...
+
+[ Stage2 ] ADDI ALUOutput = 1052
+[ Stage4:RegisterWrite ] writing value 32 to register r9
+[ Stage4 ] LW stored 32 into r9
+[ Stage1:RegisterFetch ] Result from current EX - ALUOutput
+[ Stage1:RegisterFetch ] A = 1052
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] B = 1080
+[ Stage1 ] BNE r16, r17 to relative address -16
+[ PortManager :: Write ] Wrote word to Device 2
+[ Stage3 ] DOUT wrote value = 32 to device 2
+[__ PC_update_control __] NPC updated by stage 0 to 1116
+[ Stage0 ] PC to fetch = 1112, Instruction = 0
+[** Clock: 41 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 2 to 1096
+[ Stage2:UpdatePC ] updated NPC with relative address
+[ Stage2 ] BNE jumping to relative address -16
+[ Stage3 ] ADDI idle
+[ Stage1 ] NOP
+[__ PC_update_control __] NPC update by stage 0 aborted
+[ Stage0 ] PC to fetch = 1116, Instruction = 0
+[ Stage4 ] DOUT idle
+[** Clock: 42 **] Executed...
+[** Clock: 42 **] Flushing stage 0
+[** Clock: 42 **] Flushing stage 1
+
+[ Stage2 ] NOP
+[ Stage3 ] BNE idle
+[ Stage4:RegisterWrite ] writing value 1052 to register r16
+[ Stage4 ] ADDI stored 1052 into r16
+[ Stage1 ] NOP
+[__ PC_update_control __] NPC updated by stage 0 to 1100
+[ Stage0 ] PC to fetch = 1096, Instruction = 19491
+[** Clock: 43 **] Executed...
+
+[ Stage2 ] NOP
+[__ PC_update_control __] NPC updated by stage 0 to 1104
+[ Stage0 ] PC to fetch = 1100, Instruction = 131710
+[ Stage4 ] BNE idle
+[ Stage3 ] NOP
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1052
+[ Stage1 ] LW Memory[0 + (r16)] -> r9
+[** Clock: 44 **] Executed...
+
+[ Stage2 ] LW ALUOutput / Memory address = 1052
+[__ PC_update_control __] NPC updated by stage 0 to 1108
+[ Stage0 ] PC to fetch = 1104, Instruction = 295944
+[ Stage3 ] NOP
+[ Stage1:RegisterFetch ] Result unavailable
+[ Stage1:RegisterFetch ] will forward while in Stage2
+[ Stage1 ] DOUT write to device 2 contents of r9
+[ Stage4 ] NOP
+[** Clock: 45 **] Executed...
+
+[ Stage4 ] NOP
+[ Stage3 ] LW read value = 87 from address 1052
+[ Stage2:RegisterFetch ] Result from current MEM - LMD
+[ Stage2:RegisterFetch ] A = 87
+[ Stage2 ] DOUT idle
+[__ PC_update_control __] NPC updated by stage 0 to 1112
+[ Stage0 ] PC to fetch = 1108, Instruction = -226299
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1052
+[ Stage1 ] ADDI r16 + imm 4 -> r16
+[** Clock: 46 **] Executed...
+
+[ Stage2 ] ADDI ALUOutput = 1056
+[ Stage1:RegisterFetch ] Result from current EX - ALUOutput
+[ Stage1:RegisterFetch ] A = 1056
+[ Stage4:RegisterWrite ] writing value 87 to register r9
+[ Stage4 ] LW stored 87 into r9
+[ PortManager :: Write ] Wrote word to Device 2
+[ Stage3 ] DOUT wrote value = 87 to device 2
+[__ PC_update_control __] NPC updated by stage 0 to 1116
+[ Stage0 ] PC to fetch = 1112, Instruction = 0
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] B = 1080
+[ Stage1 ] BNE r16, r17 to relative address -16
+[** Clock: 47 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 2 to 1096
+[ Stage2:UpdatePC ] updated NPC with relative address
+[ Stage2 ] BNE jumping to relative address -16
+[ Stage3 ] ADDI idle
+[__ PC_update_control __] NPC update by stage 0 aborted
+[ Stage0 ] PC to fetch = 1116, Instruction = 0
+[ Stage1 ] NOP
+[ Stage4 ] DOUT idle
+[** Clock: 48 **] Executed...
+[** Clock: 48 **] Flushing stage 0
+[** Clock: 48 **] Flushing stage 1
+
+[ Stage2 ] NOP
+[ Stage3 ] BNE idle
+[ Stage1 ] NOP
+[ Stage4:RegisterWrite ] writing value 1056 to register r16
+[ Stage4 ] ADDI stored 1056 into r16
+[__ PC_update_control __] NPC updated by stage 0 to 1100
+[ Stage0 ] PC to fetch = 1096, Instruction = 19491
+[** Clock: 49 **] Executed...
+
+[ Stage2 ] NOP
+[__ PC_update_control __] NPC updated by stage 0 to 1104
+[ Stage0 ] PC to fetch = 1100, Instruction = 131710
+[ Stage4 ] BNE idle
+[ Stage3 ] NOP
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1056
+[ Stage1 ] LW Memory[0 + (r16)] -> r9
+[** Clock: 50 **] Executed...
+
+[ Stage2 ] LW ALUOutput / Memory address = 1056
+[__ PC_update_control __] NPC updated by stage 0 to 1108
+[ Stage0 ] PC to fetch = 1104, Instruction = 295944
+[ Stage3 ] NOP
+[ Stage4 ] NOP
+[ Stage1:RegisterFetch ] Result unavailable
+[ Stage1:RegisterFetch ] will forward while in Stage2
+[ Stage1 ] DOUT write to device 2 contents of r9
+[** Clock: 51 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 0 to 1112
+[ Stage0 ] PC to fetch = 1108, Instruction = -226299
+[ Stage3 ] LW read value = 111 from address 1056
+[ Stage2:RegisterFetch ] Result from current MEM - LMD
+[ Stage2:RegisterFetch ] A = 111
+[ Stage2 ] DOUT idle
+[ Stage4 ] NOP
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1056
+[ Stage1 ] ADDI r16 + imm 4 -> r16
+[** Clock: 52 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 0 to 1116
+[ Stage0 ] PC to fetch = 1112, Instruction = 0
+[ Stage4:RegisterWrite ] writing value 111 to register r9
+[ Stage4 ] LW stored 111 into r9
+[ Stage2 ] ADDI ALUOutput = 1060
+[ PortManager :: Write ] Wrote word to Device 2
+[ Stage3 ] DOUT wrote value = 111 to device 2
+[ Stage1:RegisterFetch ] Result from current EX - ALUOutput
+[ Stage1:RegisterFetch ] A = 1060
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] B = 1080
+[ Stage1 ] BNE r16, r17 to relative address -16
+[** Clock: 53 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 0 to 1120
+[ Stage0 ] PC to fetch = 1116, Instruction = 0
+[ Stage3 ] ADDI idle
+[__ PC_update_control __] NPC updated by stage 2 to 1096
+[ Stage2:UpdatePC ] updated NPC with relative address
+[ Stage2 ] BNE jumping to relative address -16
+[ Stage4 ] DOUT idle
+[ Stage1 ] NOP
+[** Clock: 54 **] Executed...
+[** Clock: 54 **] Flushing stage 0
+[** Clock: 54 **] Flushing stage 1
+
+[__ PC_update_control __] NPC updated by stage 0 to 1100
+[ Stage0 ] PC to fetch = 1096, Instruction = 19491
+[ Stage4:RegisterWrite ] writing value 1060 to register r16
+[ Stage4 ] ADDI stored 1060 into r16
+[ Stage2 ] NOP
+[ Stage3 ] BNE idle
+[ Stage1 ] NOP
+[** Clock: 55 **] Executed...
+
+[ Stage2 ] NOP
+[ Stage4 ] BNE idle
+[ Stage3 ] NOP
+[__ PC_update_control __] NPC updated by stage 0 to 1104
+[ Stage0 ] PC to fetch = 1100, Instruction = 131710
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1060
+[ Stage1 ] LW Memory[0 + (r16)] -> r9
+[** Clock: 56 **] Executed...
+
+[ Stage2 ] LW ALUOutput / Memory address = 1060
+[ Stage4 ] NOP
+[ Stage3 ] NOP
+[__ PC_update_control __] NPC updated by stage 0 to 1108
+[ Stage0 ] PC to fetch = 1104, Instruction = 295944
+[ Stage1:RegisterFetch ] Result unavailable
+[ Stage1:RegisterFetch ] will forward while in Stage2
+[ Stage1 ] DOUT write to device 2 contents of r9
+[** Clock: 57 **] Executed...
+
+[ Stage4 ] NOP
+[ Stage3 ] LW read value = 114 from address 1060
+[ Stage2:RegisterFetch ] Result from current MEM - LMD
+[ Stage2:RegisterFetch ] A = 114
+[ Stage2 ] DOUT idle
+[__ PC_update_control __] NPC updated by stage 0 to 1112
+[ Stage0 ] PC to fetch = 1108, Instruction = -226299
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1060
+[ Stage1 ] ADDI r16 + imm 4 -> r16
+[** Clock: 58 **] Executed...
+
+[ Stage2 ] ADDI ALUOutput = 1064
+[ Stage4:RegisterWrite ] writing value 114 to register r9
+[ Stage4 ] LW stored 114 into r9
+[ PortManager :: Write ] Wrote word to Device 2
+[ Stage3 ] DOUT wrote value = 114 to device 2
+[__ PC_update_control __] NPC updated by stage 0 to 1116
+[ Stage0 ] PC to fetch = 1112, Instruction = 0
+[ Stage1:RegisterFetch ] Result from current EX - ALUOutput
+[ Stage1:RegisterFetch ] A = 1064
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] B = 1080
+[ Stage1 ] BNE r16, r17 to relative address -16
+[** Clock: 59 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 2 to 1096
+[ Stage2:UpdatePC ] updated NPC with relative address
+[ Stage2 ] BNE jumping to relative address -16
+[ Stage4 ] DOUT idle
+[ Stage3 ] ADDI idle
+[__ PC_update_control __] NPC update by stage 0 aborted
+[ Stage0 ] PC to fetch = 1116, Instruction = 0
+[ Stage1 ] NOP
+[** Clock: 60 **] Executed...
+[** Clock: 60 **] Flushing stage 0
+[** Clock: 60 **] Flushing stage 1
+
+[ Stage2 ] NOP
+[ Stage4:RegisterWrite ] writing value 1064 to register r16
+[ Stage4 ] ADDI stored 1064 into r16
+[ Stage3 ] BNE idle
+[__ PC_update_control __] NPC updated by stage 0 to 1100
+[ Stage0 ] PC to fetch = 1096, Instruction = 19491
+[ Stage1 ] NOP
+[** Clock: 61 **] Executed...
+
+[ Stage2 ] NOP
+[ Stage4 ] BNE idle
+[ Stage3 ] NOP
+[__ PC_update_control __] NPC updated by stage 0 to 1104
+[ Stage0 ] PC to fetch = 1100, Instruction = 131710
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1064
+[ Stage1 ] LW Memory[0 + (r16)] -> r9
+[** Clock: 62 **] Executed...
+
+[ Stage2 ] LW ALUOutput / Memory address = 1064
+[ Stage4 ] NOP
+[ Stage3 ] NOP
+[__ PC_update_control __] NPC updated by stage 0 to 1108
+[ Stage0 ] PC to fetch = 1104, Instruction = 295944
+[ Stage1:RegisterFetch ] Result unavailable
+[ Stage1:RegisterFetch ] will forward while in Stage2
+[ Stage1 ] DOUT write to device 2 contents of r9
+[** Clock: 63 **] Executed...
+
+[ Stage4 ] NOP
+[ Stage3 ] LW read value = 108 from address 1064
+[ Stage2:RegisterFetch ] Result from current MEM - LMD
+[ Stage2:RegisterFetch ] A = 108
+[ Stage2 ] DOUT idle
+[__ PC_update_control __] NPC updated by stage 0 to 1112
+[ Stage0 ] PC to fetch = 1108, Instruction = -226299
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1064
+[ Stage1 ] ADDI r16 + imm 4 -> r16
+[** Clock: 64 **] Executed...
+
+[ Stage2 ] ADDI ALUOutput = 1068
+[ Stage4:RegisterWrite ] writing value 108 to register r9
+[ Stage4 ] LW stored 108 into r9
+[ PortManager :: Write ] Wrote word to Device 2
+[ Stage3 ] DOUT wrote value = 108 to device 2
+[__ PC_update_control __] NPC updated by stage 0 to 1116
+[ Stage0 ] PC to fetch = 1112, Instruction = 0
+[ Stage1:RegisterFetch ] Result from current EX - ALUOutput
+[ Stage1:RegisterFetch ] A = 1068
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] B = 1080
+[ Stage1 ] BNE r16, r17 to relative address -16
+[** Clock: 65 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 2 to 1096
+[ Stage2:UpdatePC ] updated NPC with relative address
+[ Stage2 ] BNE jumping to relative address -16
+[ Stage4 ] DOUT idle
+[ Stage3 ] ADDI idle
+[__ PC_update_control __] NPC update by stage 0 aborted
+[ Stage0 ] PC to fetch = 1116, Instruction = 0
+[ Stage1 ] NOP
+[** Clock: 66 **] Executed...
+[** Clock: 66 **] Flushing stage 0
+[** Clock: 66 **] Flushing stage 1
+
+[ Stage2 ] NOP
+[ Stage4:RegisterWrite ] writing value 1068 to register r16
+[ Stage4 ] ADDI stored 1068 into r16
+[ Stage3 ] BNE idle
+[__ PC_update_control __] NPC updated by stage 0 to 1100
+[ Stage0 ] PC to fetch = 1096, Instruction = 19491
+[ Stage1 ] NOP
+[** Clock: 67 **] Executed...
+
+[ Stage2 ] NOP
+[ Stage4 ] BNE idle
+[ Stage3 ] NOP
+[__ PC_update_control __] NPC updated by stage 0 to 1104
+[ Stage0 ] PC to fetch = 1100, Instruction = 131710
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1068
+[ Stage1 ] LW Memory[0 + (r16)] -> r9
+[** Clock: 68 **] Executed...
+
+[ Stage2 ] LW ALUOutput / Memory address = 1068
+[ Stage4 ] NOP
+[ Stage3 ] NOP
+[__ PC_update_control __] NPC updated by stage 0 to 1108
+[ Stage0 ] PC to fetch = 1104, Instruction = 295944
+[ Stage1:RegisterFetch ] Result unavailable
+[ Stage1:RegisterFetch ] will forward while in Stage2
+[ Stage1 ] DOUT write to device 2 contents of r9
+[** Clock: 69 **] Executed...
+
+[ Stage4 ] NOP
+[ Stage3 ] LW read value = 100 from address 1068
+[ Stage2:RegisterFetch ] Result from current MEM - LMD
+[ Stage2:RegisterFetch ] A = 100
+[ Stage2 ] DOUT idle
+[__ PC_update_control __] NPC updated by stage 0 to 1112
+[ Stage0 ] PC to fetch = 1108, Instruction = -226299
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1068
+[ Stage1 ] ADDI r16 + imm 4 -> r16
+[** Clock: 70 **] Executed...
+
+[ Stage2 ] ADDI ALUOutput = 1072
+[ Stage4:RegisterWrite ] writing value 100 to register r9
+[ Stage4 ] LW stored 100 into r9
+[ PortManager :: Write ] Wrote word to Device 2
+[ Stage3 ] DOUT wrote value = 100 to device 2
+[__ PC_update_control __] NPC updated by stage 0 to 1116
+[ Stage0 ] PC to fetch = 1112, Instruction = 0
+[ Stage1:RegisterFetch ] Result from current EX - ALUOutput
+[ Stage1:RegisterFetch ] A = 1072
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] B = 1080
+[ Stage1 ] BNE r16, r17 to relative address -16
+[** Clock: 71 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 2 to 1096
+[ Stage2:UpdatePC ] updated NPC with relative address
+[ Stage2 ] BNE jumping to relative address -16
+[ Stage4 ] DOUT idle
+[ Stage3 ] ADDI idle
+[__ PC_update_control __] NPC update by stage 0 aborted
+[ Stage0 ] PC to fetch = 1116, Instruction = 0
+[ Stage1 ] NOP
+[** Clock: 72 **] Executed...
+[** Clock: 72 **] Flushing stage 0
+[** Clock: 72 **] Flushing stage 1
+
+[ Stage2 ] NOP
+[ Stage4:RegisterWrite ] writing value 1072 to register r16
+[ Stage4 ] ADDI stored 1072 into r16
+[ Stage3 ] BNE idle
+[__ PC_update_control __] NPC updated by stage 0 to 1100
+[ Stage0 ] PC to fetch = 1096, Instruction = 19491
+[ Stage1 ] NOP
+[** Clock: 73 **] Executed...
+
+[ Stage2 ] NOP
+[ Stage4 ] BNE idle
+[ Stage3 ] NOP
+[__ PC_update_control __] NPC updated by stage 0 to 1104
+[ Stage0 ] PC to fetch = 1100, Instruction = 131710
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1072
+[ Stage1 ] LW Memory[0 + (r16)] -> r9
+[** Clock: 74 **] Executed...
+
+[ Stage2 ] LW ALUOutput / Memory address = 1072
+[ Stage4 ] NOP
+[ Stage3 ] NOP
+[__ PC_update_control __] NPC updated by stage 0 to 1108
+[ Stage0 ] PC to fetch = 1104, Instruction = 295944
+[ Stage1:RegisterFetch ] Result unavailable
+[ Stage1:RegisterFetch ] will forward while in Stage2
+[ Stage1 ] DOUT write to device 2 contents of r9
+[** Clock: 75 **] Executed...
+
+[ Stage4 ] NOP
+[ Stage3 ] LW read value = 33 from address 1072
+[ Stage2:RegisterFetch ] Result from current MEM - LMD
+[ Stage2:RegisterFetch ] A = 33
+[ Stage2 ] DOUT idle
+[__ PC_update_control __] NPC updated by stage 0 to 1112
+[ Stage0 ] PC to fetch = 1108, Instruction = -226299
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1072
+[ Stage1 ] ADDI r16 + imm 4 -> r16
+[** Clock: 76 **] Executed...
+
+[ Stage2 ] ADDI ALUOutput = 1076
+[ Stage4:RegisterWrite ] writing value 33 to register r9
+[ Stage4 ] LW stored 33 into r9
+[ PortManager :: Write ] Wrote word to Device 2
+[ Stage3 ] DOUT wrote value = 33 to device 2
+[__ PC_update_control __] NPC updated by stage 0 to 1116
+[ Stage0 ] PC to fetch = 1112, Instruction = 0
+[ Stage1:RegisterFetch ] Result from current EX - ALUOutput
+[ Stage1:RegisterFetch ] A = 1076
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] B = 1080
+[ Stage1 ] BNE r16, r17 to relative address -16
+[** Clock: 77 **] Executed...
+
+[__ PC_update_control __] NPC updated by stage 2 to 1096
+[ Stage2:UpdatePC ] updated NPC with relative address
+[ Stage2 ] BNE jumping to relative address -16
+[ Stage4 ] DOUT idle
+[ Stage3 ] ADDI idle
+[__ PC_update_control __] NPC update by stage 0 aborted
+[ Stage0 ] PC to fetch = 1116, Instruction = 0
+[ Stage1 ] NOP
+[** Clock: 78 **] Executed...
+[** Clock: 78 **] Flushing stage 0
+[** Clock: 78 **] Flushing stage 1
+
+[ Stage2 ] NOP
+[ Stage4:RegisterWrite ] writing value 1076 to register r16
+[ Stage4 ] ADDI stored 1076 into r16
+[ Stage3 ] BNE idle
+[__ PC_update_control __] NPC updated by stage 0 to 1100
+[ Stage0 ] PC to fetch = 1096, Instruction = 19491
+[ Stage1 ] NOP
+[** Clock: 79 **] Executed...
+
+[ Stage2 ] NOP
+[ Stage4 ] BNE idle
+[ Stage3 ] NOP
+[__ PC_update_control __] NPC updated by stage 0 to 1104
+[ Stage0 ] PC to fetch = 1100, Instruction = 131710
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1076
+[ Stage1 ] LW Memory[0 + (r16)] -> r9
+[** Clock: 80 **] Executed...
+
+[ Stage2 ] LW ALUOutput / Memory address = 1076
+[ Stage3 ] NOP
+[ Stage4 ] NOP
+[__ PC_update_control __] NPC updated by stage 0 to 1108
+[ Stage0 ] PC to fetch = 1104, Instruction = 295944
+[ Stage1:RegisterFetch ] Result unavailable
+[ Stage1:RegisterFetch ] will forward while in Stage2
+[ Stage1 ] DOUT write to device 2 contents of r9
+[** Clock: 81 **] Executed...
+
+[ Stage4 ] NOP
+[ Stage3 ] LW read value = 10 from address 1076
+[ Stage2:RegisterFetch ] Result from current MEM - LMD
+[ Stage2:RegisterFetch ] A = 10
+[ Stage2 ] DOUT idle
+[__ PC_update_control __] NPC updated by stage 0 to 1112
+[ Stage0 ] PC to fetch = 1108, Instruction = -226299
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] A = 1076
+[ Stage1 ] ADDI r16 + imm 4 -> r16
+[** Clock: 82 **] Executed...
+
+[ Stage4:RegisterWrite ] writing value 10 to register r9
+[ Stage4 ] LW stored 10 into r9
+[ Stage2 ] ADDI ALUOutput = 1080
+[ PortManager :: Write ] Wrote word to Device 2
+[ Stage3 ] DOUT wrote value = 10 to device 2
+[__ PC_update_control __] NPC updated by stage 0 to 1116
+[ Stage0 ] PC to fetch = 1112, Instruction = 0
+[ Stage1:RegisterFetch ] Result from current EX - ALUOutput
+[ Stage1:RegisterFetch ] A = 1080
+[ Stage1:RegisterFetch ] Result from Register files
+[ Stage1:RegisterFetch ] B = 1080
+[ Stage1 ] BNE r16, r17 to relative address -16
+[** Clock: 83 **] Executed...
+
+[ Stage2 ] BNE branch not taken
+[ Stage4 ] DOUT idle
+[ Stage3 ] ADDI idle
+[__ PC_update_control __] NPC updated by stage 0 to 1120
+[ Stage0 ] PC to fetch = 1116, Instruction = 0
+[ Stage1 ] NOP
+[** Clock: 84 **] Executed...
+
+[ Stage4:RegisterWrite ] writing value 1080 to register r16
+[ Stage4 ] ADDI stored 1080 into r16
+[ Stage2 ] NOP
+[ Stage3 ] BNE idle
+[__ PC_update_control __] NPC updated by stage 0 to 1124
+[ Stage0 ] PC to fetch = 1120, Instruction = 0
+[ Stage1 ] NOP
+[** Clock: 85 **] Executed...
+
+[ Stage2 ] NOP
+[ Stage4 ] BNE idle
+[ Stage3 ] NOP
+[ Stage1 ] NOP
+[__ PC_update_control __] NPC updated by stage 0 to 1128
+[ Stage0 ] PC to fetch = 1124, Instruction = 0
+[** Clock: 86 **] Executed...
+
+[ Stage1 ] NOP
+[ Stage2 ] NOP
+[ Stage4 ] NOP
+[ Stage3 ] NOP
+[__ PC_update_control __] NPC updated by stage 0 to 1132
+[ Stage0 ] PC to fetch = 1128, Instruction = 0
+[** Clock: 87 **] Executed...
+
+mips > q
+
+[ Stage1 ] NOP
+[ Stage2 ] NOP
+[ Stage4 ] NOP
+[ Stage3 ] NOP
+[__ PC_update_control __] NPC updated by stage 0 to 1136
+[ Stage0 ] PC to fetch = 1132, Instruction = 0Terminated
+ubuntu@ubuntu-rpi2:~/mini-project/test$ 
+
+
+
+*******************************************************************************
+Output from 'dumbterminal'
+*******************************************************************************
+
+ubuntu@ubuntu-rpi2:~/mini-project/test$ ./dumbterminal 
+
+Input Thread made contact !!
+
+Output Thread made contact !!
+Hello World!
+
+
+^C
+ubuntu@ubuntu-rpi2:~/mini-project/test$ 
