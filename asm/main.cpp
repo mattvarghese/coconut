@@ -21,6 +21,10 @@
  * along with Coconut.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ * This file contains the entry point of the assembler
+ */
+
 # include <iostream>
 using std::cerr;
 using std::cout;
