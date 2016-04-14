@@ -39,7 +39,10 @@ public:
 	
 	virtual bool Write ( word_32 address, word_32 value, int noOfBytes ) = 0;
 	
+	// AtExit is the destructor, so there is really no need for the virtual destructor
 	virtual void AtExit ( ) = 0;
+
+	virtual ~Cache ( ) { };
 };
 
 

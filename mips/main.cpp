@@ -28,7 +28,7 @@ using std::flush;
 
 # include <fcntl.h>
 # include <semaphore.h>
-sem_t * cout_mutex;	// Refered as extern from all
+sem_t * cout_mutex;	// Referred as extern from all
 	// other files in 'mips' which uses cout
 	// and which might encounter thread switches 
 	// while c-ing out...
@@ -40,6 +40,11 @@ sem_t * cout_mutex;	// Refered as extern from all
 
 # include "../include/color.h"
 
+# define	INPUTPORT	5678
+# define	OUTPUTPORT	5680
+
+// Does it justify having a declaration when the definition is also in the same file?
+// Why not move the definition up here?
 Cache * pickCache ( Cache * mem, bool noMultilevel, char * type, int level );
 
 int main ( )
@@ -57,6 +62,7 @@ int main ( )
 		return -3;
 	}
 	
+	// TODO this should be a configuration
 	MainMemory * mem = new MainMemory ( 4914304 ); // 4 MB
 	
 	// Here we initialise the memory system
@@ -97,8 +103,8 @@ int main ( )
 	// And set up the mapping between ports or device numbers
 	// and sockets...
 	PortManager * pMan = new PortManager ( );
-	pMan -> AddPort ( 1, 5678 );	// A character Input device 
-	pMan -> AddPort ( 2, 5680 );	// A character Output device
+	pMan -> AddPort ( 1, INPUTPORT );	// A character Input device
+	pMan -> AddPort ( 2, OUTPUTPORT );	// A character Output device
 	
 	Processor proc ( mem, dc,ic, pMan );
 	proc.Execute ( );	// Now this thread runs the processor clock function...

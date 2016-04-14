@@ -90,6 +90,7 @@ public:
 	//bool SingleStep;  // TODO
 	//bool Pause;       // TODO
 
+	// TODO Cleanup so that comments are always before what they document
 	Processor ( MainMemory * m, Cache * dc, Cache * ic, PortManager * pm );
 	~Processor ( );  // calls AtExit (); note that this destructor is never invoked.
 	void AtExit ( ); // Destroys the threads.
