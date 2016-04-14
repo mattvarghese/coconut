@@ -21,6 +21,16 @@
  * along with Coconut.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ * This program simulates a text screen and a keyboard
+ * for the coconut mips simulator.
+ * It listens on specified ports for connections.
+ * Once the coconut simulator makes connection on the output port, whatever output that is
+ * sent to us by the simulator gets displayed on the console.
+ * Once the coconut simulator makes connection on the input port, whatever input entered
+ * by the user is sent to coconut as keyboard input
+ */
+
 # include <iostream>
 using std::cin;
 using std::cerr;
