@@ -21,6 +21,11 @@
  * along with Coconut.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ * This file displays the contents of an assembled mips program in a
+ * tabular fashion for validating the assembly
+ */
+
 # include <iostream>
 # include <fstream>
 # include <iomanip>

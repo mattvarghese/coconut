@@ -46,6 +46,7 @@ bool pass1 = true;
 
 int main(int argc, char **argv)
 {
+	// Check for correct usage
 	if ( argc < 3 )
 	{
 		cerr << red << "\nusage : asm <output_file> <input_file>"
@@ -53,6 +54,7 @@ int main(int argc, char **argv)
 		return -1;
 	}
 	
+	// Check input file
 	yyin = fopen( argv[2], "r" );
 	if ( yyin == NULL )
 	{
@@ -60,6 +62,7 @@ int main(int argc, char **argv)
 		return -2;
 	}
 	
+	// Validate output file
 	ofile.open ( argv[1], ios::out | ios::trunc | ios::binary );
 	if ( !ofile )
 	{
@@ -68,11 +71,14 @@ int main(int argc, char **argv)
 		return -3;
 	}
 	
+	// Pass 1
 	cout << flush << "\nStarting pass 1 ... \n";
 	lineno = 1;
 	pass1 = true;
 	yyparse ();
 	fclose ( yyin );
+
+	// if Pass 1 worked, Pass 2
 	if ( errorcount == 0 )
 	{
 		cout << flush << "\nStarting pass 2 ... \n";
@@ -83,6 +89,7 @@ int main(int argc, char **argv)
 		fclose ( yyin );
 	}
 	
+	// All done !
 	cout << flush << "\nDisplaying the symbol table ... \n";
 	symtab.Display ( );
 	

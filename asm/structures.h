@@ -21,11 +21,18 @@
  * along with Coconut.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ * This file contains the declaration of the symbol table classes
+ */
+
 # ifndef __STRUCTURES_H
 # define __STRUCTURES_H
 
 class SymtabEntry
 {
+	/* This class is essentially a single
+	 * node on a linked list
+	 */
 public:
 	char id[100];
 	unsigned int address;
@@ -36,6 +43,12 @@ public:
 
 class Symtab
 {
+	/* TODO
+	 * This is a really bad implementation of the symbol table
+	 * Ideally this should be converted to something like a
+	 * hash table for efficiency.
+	 * But the interface can be the same.
+	 */
 private:
 	SymtabEntry * first;
 
@@ -43,12 +56,17 @@ public:
 	Symtab ( );
 	~Symtab ( );
 	
+	// Add an entry into the symbol table
 	bool Insert ( char * id, unsigned int address );
 	
+	// Does the entry exist in the symbol table
 	bool LookUp ( char * id );
-	
+
+	// Does the entry exist in the symbol table
+	// And if it does, retrieve its address
 	bool LookUp ( char * id, unsigned int & address );
 	
+	// Display the contents of the symbol table
 	void Display ( );
 };
 

@@ -21,6 +21,10 @@
  * along with Coconut.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ * This file contains the definition of the symbol table classes
+ */
+
 # include "structures.h"
 
 # include <string>
