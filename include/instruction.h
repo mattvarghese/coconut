@@ -21,6 +21,11 @@
  * along with Coconut.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ * This file declares the various instruction formats
+ * and structures associated with mips instructions
+ */
+
 # ifndef __INSTRUCTION_H
 # define __INSTRUCTION_H
 
@@ -33,7 +38,7 @@ public :
 	u_word_32 rest : 26;
 };
 
-/* different types of instructions being modelled
+/* different types of instructions being modeled
  * as derived types of Instruction will cause inconsistencies
  * in instruction sizes.  So we have to explicitly cast and 
  * convert between them.
@@ -66,6 +71,10 @@ public :
 	u_word_32 tAddr : 26;
 };
 
+/*
+ * This union object means that we can interpret
+ * the instruction as any of the above formats
+ */
 union Inst
 { // This can be optimally be used everywhere.
 	word_32 iV;		// Signed

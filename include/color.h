@@ -24,7 +24,10 @@
 # ifndef __COLOR_H
 # define __COLOR_H
 
-//# define __WITH_COLOR			// This should be defined if you want colors
+// This should be defined if you want colors
+// Note that this is better defined in the mips Makefile
+// as a flag to the compier
+//# define __WITH_COLOR
 
 # ifdef __WITH_COLOR
 

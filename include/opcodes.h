@@ -21,6 +21,10 @@
  * along with Coconut.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ * This file defines all the supported opcodes
+ */
+
 # ifndef __OPCODES_H
 # define __OPCODES_H
 
