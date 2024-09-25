@@ -44,7 +44,7 @@
 	extern char * yytext;	// from lexer.lex
 	extern bool pass1;	// from main.cpp
 	extern ofstream ofile;	// from main.cpp
-	extern int yylex ();	// from lexer.lex
+	extern "C" int yylex ();	// from lexer.lex
 	
 	int yyerror ( char * );
 	int address = 0;
