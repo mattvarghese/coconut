@@ -39,6 +39,8 @@
 	extern int lineno;	// from main.cpp
 	extern int errorcount;	// from asm.ypp
 	extern bool pass1;	// from main.cpp
+
+	extern "C" int yylex (void);
 	
 	char stringbuffer[100];
 	int stringindex;
