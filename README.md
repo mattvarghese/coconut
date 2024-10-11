@@ -27,6 +27,8 @@ The distribution has been tested and verified under the following platforms
  1. Redhat / linux 9 x86
  2. Ubuntu / Linux 15.10 x64
  3. Ubuntu MATE / Linux 15.10 armhf on **Raspberry Pi 2**
+ 4. Ubuntu MATE 24.04 amd64
+ 5. Ubuntu MATE 24.04 aarch64 on Raspberry Pi 400 & Raspberry Pi 5
 
 To use the distribution, **move into the 'test' directory** and run 'make'. If your terminal doesn't support colors, remove the flag *'-D__WITH_COLOR'* from each of the files 'mips/Makefile', 'asm/Makefile', 'io/Makefile'
 
