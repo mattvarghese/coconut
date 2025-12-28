@@ -1,5 +1,5 @@
 # Coconut
-**Coconut** is a Multi-threaded simulation of the pipeline of a MIPS Microprocessor (integer instructions only) replete with Memory Subsystem, Caches and their performance analysis, I/O device modules and an assembler.
+**Coconut** is a Multi-threaded simulation of the pipeline of a MIPS Microprocessor (integer instructions only) replete with Memory Subsystem, Caches and their performance analysis, I/O device modules, an assembler, and a Small C compiler.
 
 See accompanying **project-report.pdf** for additional information.
 
@@ -32,21 +32,102 @@ The distribution has been tested and verified under the following platforms
 
 To use the distribution, **move into the 'test' directory** and run 'make'. If your terminal doesn't support colors, remove the flag *'-D__WITH_COLOR'* from each of the files 'mips/Makefile', 'asm/Makefile', 'io/Makefile'
 
-Once the compilation completes without errors, run (Note - the file MUST be named a.out for Coconut to bootload it.)
-> ./asm a.out {.mips file}
+Once the compilation completes without errors, Coconut supports running either:
+1) Hand-written MIPS assembly via the assembler, or
+2) C programs compiled via the SmallC compiler into Coconut MIPS assembly.
 
-to assemble a mips program for use by the simulated processor.
+---
 
-Then on one virtual terminal (xterm) run 
+## Building
+From the `test/` directory:
+
+> make
+
+This builds:
+- `coconut` (the simulator)
+- `asm` (the assembler)
+- `dumbterminal` (I/O device)
+- `smallc` (the SmallC compiler)
+
+To cleanup the build:
+
+> make clean
+
+---
+
+## Running MIPS Assembly Programs
+**Note:** the assembled output MUST be named `a.out` for Coconut to bootload it.
+
+1. Assemble a `.mips` file:
+
+> ./asm a.out {program.mips}
+
+2. On one terminal, run the I/O device:
+
 > ./dumbterminal
 
-and on another run 
+3. On another terminal, run the simulator:
+
 > ./coconut
 
-'./coconut' asks you to first pick the caches. Then it brings you to the a prompt 
-> mips > 
+`./coconut` asks you to first pick the caches. Then it brings you to the prompt:
 
-where you need to issue commands. The following commands are supported
+> mips >
+
+---
+
+## Running C Programs (SmallC Compiler)
+C programs intended for SmallC must use the extension:
+
+- `*.smallc.c`
+
+The compiler produces Coconut assembly with extension:
+
+- `*.smallc.mips`
+
+### Example: compile + assemble + run
+Given:
+
+- `factorial.smallc.c`
+
+1. Compile C → Coconut assembly:
+
+> ./smallc factorial.smallc.c
+
+This produces:
+
+- `factorial.smallc.mips`
+
+2. Assemble the generated `.smallc.mips` into `a.out`:
+
+> ./asm a.out factorial.smallc.mips
+
+3. Run I/O and simulator as usual:
+
+Terminal 1:
+> ./dumbterminal
+
+Terminal 2:
+> ./coconut
+
+### Notes / SmallC v1 limitations
+SmallC is intentionally small (teaching-focused). Current v1 features include:
+- `int` and `char`
+- local variables
+- `if`, `while`, `for`
+- basic arithmetic and comparisons
+- arrays (represented as word-addressed storage)
+- built-in I/O helpers:
+  - `int getc()`   (reads one character)
+  - `int putc(int c)` (writes one character)
+  - `int puts(char* s)` / `puts("literal")` convenience
+
+SmallC-generated programs typically end by returning from `main`, after which Coconut transfers control to a `HALT` loop in the generated assembly.
+
+---
+
+## Coconut Simulator Commands
+The following commands are supported at the `mips >` prompt:
  1. 'n' execute one clock cycle of the processor.
  2. 'c {number}' execute {number} number of clock cycles.
  3. 'p' print values of registers. (small 'p')
@@ -62,8 +143,9 @@ where you need to issue commands. The following commands are supported
 When closing the simulator, make sure to first quit out of Coconut by entering 'q' at the 'mips >' prompt, before you close 'dumbterminal' (using Ctrl+C). Otherwise, you may have to wait a bit before the sockets that the terminal binds to are released, before the 'dumbterminal' can bind to them again. 
 
 To cleanup the compile, run 'make distclean' from the 'test/' folder, and remove any 'a.out' file.
+Note: An example of virtual terminal mentioned above is an 'xterm' window. However, you can use any terminal.
 
-Note: An example of virtual terminal mentioned above is an 'xterm' window. Howevr, you can use any terminal.
+---
 
 ## Distribution Structure
 ### 'asm' directory
@@ -78,11 +160,14 @@ Contains the source for three simple i/o devices
  2. A simple screen ( a character terminal ).
  3. A dumbterminal consisting of a simple screen and a simple keyboard.
 
+### 'compiler' directory
+Contains the source for the SmallC compiler, which compiles `*.smallc.c` programs into Coconut-compatible MIPS assembly `*.smallc.mips`.
+
 ### 'include' directory
-Contains the header files that are made use of in all of the above three sources
+Contains the header files that are made use of in all of the above sources.
 
 ### 'test' directory
-This is where the programs are run from.  Also it contains a few .mips files which are sample assembly programs which run on the processor and illustrate its working.
+This is where the programs are run from. Also contains a few `.mips` files which are sample assembly programs and a few  `*.smallc.c` programs which can be compiled to `*.smallc.mips`.  These programs run on the processor and illustrate its workings.
 
 ### 'sample_interactions' directory
 This directory contains sample outputs procured from test runs of the processor.  This directory is NOT required for the application and may safely be deleted in part or in full.
