@@ -4,7 +4,8 @@
 #include <functional>
 #include <cstdint>
 
-static inline int align4(int x) { return (x + 3) & ~3; }
+static inline int align4(int x)  { return (x + 3) & ~3; }
+static inline int align16(int x) { return (x + 15) & ~15; }
 
 std::string CodeGen::newLabel(const std::string& prefix) {
   return prefix + "_" + std::to_string(curLabelId++);
@@ -82,7 +83,7 @@ void CodeGen::emit_load_imm(AsmOut& o, const std::string& rd, int32_t imm) {
 }
 
 void CodeGen::emit_load_label_addr(AsmOut& o, const std::string& rd, const std::string& label) {
-  // Coconut idiom seen in your sample:
+  // Coconut idiom:
   //   addi rd, $zero, LABEL
   //   lui  rd, LABEL
   o.emit("\taddi\t" + rd + ", $zero, " + label);
@@ -106,27 +107,35 @@ void CodeGen::pop_t1(AsmOut& o) {
 }
 
 int CodeGen::assign_locals_and_frame(const Func& f, std::unordered_map<std::string, VarInfo>& locals) {
-  int offset = 0;
+  // New convention:
+  //   fp == sp (base of frame)
+  //   locals/params live at positive offsets: 0($fp), 4($fp), ...
+  //   saved fp and ra live at the TOP of the frame:
+  //       (frame-8)($sp) = saved fp
+  //       (frame-4)($sp) = saved ra
+  //
+  // This prevents the classic overlap bug where -4($fp) hits saved $ra.
+
+  int offset = 0; // bytes for locals/params area at bottom of frame
+
+  auto alloc_slot = [&](const std::string& name, const Type& t) {
+    VarInfo vi;
+    vi.t = t;
+    vi.isGlobal = false;
+    vi.fpOffset = offset;                // positive offset from $fp
+    offset += align4(vi.t.sizeBytes());
+    locals[name] = vi;
+  };
 
   // Params: allocate stack slots so we can treat them like locals.
   for (const auto& p : f.params) {
-    VarInfo vi;
-    vi.t = p.t;
-    vi.isGlobal = false;
-    offset += align4(vi.t.sizeBytes());
-    vi.fpOffset = -offset;
-    locals[p.name] = vi;
+    alloc_slot(p.name, p.t);
   }
 
   std::function<void(const Stmt&)> scan = [&](const Stmt& s) {
     if (auto* b = dynamic_cast<const Block*>(&s)) { for (auto& st : b->stmts) scan(*st); return; }
     if (auto* v = dynamic_cast<const VarDecl*>(&s)) {
-      VarInfo vi;
-      vi.t = v->t;
-      vi.isGlobal = false;
-      offset += align4(vi.t.sizeBytes());
-      vi.fpOffset = -offset;
-      locals[v->name] = vi;
+      alloc_slot(v->name, v->t);
       return;
     }
     if (auto* i = dynamic_cast<const If*>(&s)) { scan(*i->thenS); if (i->elseS) scan(*i->elseS); return; }
@@ -137,8 +146,8 @@ int CodeGen::assign_locals_and_frame(const Func& f, std::unordered_map<std::stri
   scan(*f.body);
 
   int localsBytes = align4(offset);
-  int saveBytes = 8; // ra, fp
-  int frame = align4(localsBytes + saveBytes);
+  int saveBytes = 8; // fp, ra
+  int frame = align16(localsBytes + saveBytes);
   if (frame < 16) frame = 16;
   return frame;
 }
@@ -148,7 +157,8 @@ void CodeGen::emit_prologue(AsmOut& o, const std::string& fname, int frameBytes)
   o.emit("\taddi\t$sp, $sp, -" + std::to_string(frameBytes));
   o.emit("\tsw\t$ra, " + std::to_string(frameBytes - 4) + "($sp)");
   o.emit("\tsw\t$fp, " + std::to_string(frameBytes - 8) + "($sp)");
-  o.emit("\taddi\t$fp, $sp, " + std::to_string(frameBytes));
+  // fp = sp (base of frame)
+  o.emit("\tadd\t$fp, $sp, $zero");
 }
 
 void CodeGen::emit_epilogue(AsmOut& o, const std::string& fname, int frameBytes) {
@@ -161,16 +171,11 @@ void CodeGen::emit_epilogue(AsmOut& o, const std::string& fname, int frameBytes)
 
 bool CodeGen::gen_builtin_call(AsmOut& o, const Call& c,
                                std::unordered_map<std::string, VarInfo>& locals) {
-  // Builtins:
-  //   int getc()         => din  $v0, 1
-  //   void putc(int x)   => eval x -> $t0 ; dout $t0, 2
-  //   void puts("lit")   => loop load words from string label; dout each; until 0 word
-  //
-  // Note: These match Coconut style: dout reg, 2 ; din reg, 1
+  (void)locals;
 
   if (c.callee == "getc") {
     o.emit("\tdin\t$v0, 1");
-    o.emit("\tadd\t$t0, $v0, $zero"); // expression result in t0
+    o.emit("\tadd\t$t0, $v0, $zero");
     return true;
   }
 
@@ -206,7 +211,7 @@ bool CodeGen::gen_builtin_call(AsmOut& o, const Call& c,
     o.emit("\tj\t" + loop);
 
     o.emit(done);
-    o.emit("\tadd\t$t0, $zero, $zero"); // result = 0
+    o.emit("\tadd\t$t0, $zero, $zero");
     return true;
   }
 
@@ -215,17 +220,15 @@ bool CodeGen::gen_builtin_call(AsmOut& o, const Call& c,
 
 void CodeGen::gen_lvalue_addr(AsmOut& o, const Expr& lhs,
                               std::unordered_map<std::string, VarInfo>& locals) {
-  // result address in $t2
   if (auto* v = dynamic_cast<const VarRef*>(&lhs)) {
     auto itL = locals.find(v->name);
     if (itL != locals.end()) {
-      int off = itL->second.fpOffset;
+      int off = itL->second.fpOffset; // positive
       o.emit("\taddi\t$t2, $fp, " + std::to_string(off));
       return;
     }
     auto itG = sym.globals.find(v->name);
     if (itG != sym.globals.end()) {
-      // For v1: globals are labels, so we can load address by label.
       emit_load_label_addr(o, "$t2", v->name + "_addr");
       return;
     }
@@ -247,8 +250,8 @@ void CodeGen::gen_lvalue_addr(AsmOut& o, const Expr& lhs,
     if (isLocal) o.emit("\taddi\t$t2, $fp, " + std::to_string(vi.fpOffset));
     else emit_load_label_addr(o, "$t2", a->name + "_addr");
 
-    gen_expr(o, *a->idx, locals); // idx in t0
-    int elem = (vi.t.base == BaseType::Char) ? 4 : 4; // store char as word in v1
+    gen_expr(o, *a->idx, locals);
+    int elem = 4; // v1 stores everything as word
     emit_load_imm(o, "$t1", elem);
 
     o.emit("\tmult\t$t0, $t1");
@@ -271,7 +274,6 @@ void CodeGen::gen_expr(AsmOut& o, const Expr& e,
     return;
   }
   if (auto* s = dynamic_cast<const StrLitE*>(&e)) {
-    // expression value = address of string label
     for (auto& ent : strings) {
       if (ent.s == s->s) {
         emit_load_label_addr(o, "$t0", ent.label);
@@ -296,7 +298,7 @@ void CodeGen::gen_expr(AsmOut& o, const Expr& e,
   }
 
   if (dynamic_cast<const IndexRef*>(&e)) {
-    gen_lvalue_addr(o, e, locals); // addr -> t2
+    gen_lvalue_addr(o, e, locals);
     emit_load_word(o, "$t0", "$t2");
     return;
   }
@@ -329,7 +331,6 @@ void CodeGen::gen_expr(AsmOut& o, const Expr& e,
   }
 
   if (auto* b = dynamic_cast<const Binary*>(&e)) {
-    // short-circuit
     if (b->op == BinOp::And || b->op == BinOp::Or) {
       std::string lTrue = newLabel("SC_TRUE");
       std::string lFalse = newLabel("SC_FALSE");
@@ -358,7 +359,6 @@ void CodeGen::gen_expr(AsmOut& o, const Expr& e,
       return;
     }
 
-    // general
     gen_expr(o, *b->a, locals);
     push_t0(o);
     gen_expr(o, *b->b, locals);
@@ -538,7 +538,6 @@ void CodeGen::gen_func(AsmOut& o, const Func& f) {
   int frameBytes = assign_locals_and_frame(f, locals);
   std::string endLabel = f.name + "_END";
 
-  // Coconut style: label without colon
   o.emit(f.name);
   emit_prologue(o, f.name, frameBytes);
 
@@ -551,7 +550,6 @@ void CodeGen::gen_func(AsmOut& o, const Func& f) {
 
   for (auto& st : f.body->stmts) gen_stmt(o, *st, locals, endLabel);
 
-  // default return 0 if falls off end
   o.emit("\tadd\t$v0, $zero, $zero");
 
   o.emit(endLabel);
@@ -564,7 +562,6 @@ std::string CodeGen::compile(const Program& p) {
 
   AsmOut out;
 
-  // Coconut formatting:
   out.emit("\tbegin\t" + std::to_string(codeBase));
   out.emit("\tstart\t" + std::to_string(codeBase));
   out.emit("\taddi\t$sp, $zero, 32760");
@@ -574,7 +571,6 @@ std::string CodeGen::compile(const Program& p) {
   out.emit("\tj\tHALT");
   out.emit("");
 
-  // strings first (matches your sample style)
   for (auto& s : strings) {
     out.emit(s.label);
     for (unsigned char c : s.s) {
@@ -584,10 +580,8 @@ std::string CodeGen::compile(const Program& p) {
   }
   out.emit("");
 
-  // functions
   for (const auto& fn : p.funcs) gen_func(out, fn);
 
-  // globals (after code for now; still valid for your assembler)
   if (!p.globals.empty()) {
     out.emit("");
     out.emit("; --- globals ---");
