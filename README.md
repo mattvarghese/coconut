@@ -51,7 +51,7 @@ This builds:
 
 To cleanup the build:
 
-> make clean
+> make distclean
 
 ---
 
