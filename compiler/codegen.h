@@ -12,14 +12,14 @@ struct AsmOut {
 
 struct CodeGen {
   // memory layout
-  int codeBase = 0;
-  int dataBase = 0; // computed after code size
+  // Coconut examples typically begin/start at 1024.
+  int codeBase = 1024;
   int curLabelId = 1;
 
   SymTab sym;
 
   // string pool
-  struct StrEnt { std::string label; std::string s; int addr = 0; };
+  struct StrEnt { std::string label; std::string s; };
   std::vector<StrEnt> strings;
 
   // compile entry
@@ -28,10 +28,11 @@ struct CodeGen {
 private:
   // Passes
   void build_symtabs(const Program& p);
-  void layout_globals_and_strings(const Program& p, int codeSizeBytes);
+  void gather_strings(const Program& p);
 
   // Codegen helpers
   std::string newLabel(const std::string& prefix);
+
   void emit_prologue(AsmOut& o, const std::string& fname, int frameBytes);
   void emit_epilogue(AsmOut& o, const std::string& fname, int frameBytes);
 
@@ -53,7 +54,9 @@ private:
 
   // loads/stores
   void emit_load_imm(AsmOut& o, const std::string& rd, int32_t imm);
-  void emit_load_addr(AsmOut& o, const std::string& rd, int32_t addr);
+
+  // address-of-label (Coconut idiom: addi + lui with label)
+  void emit_load_label_addr(AsmOut& o, const std::string& rd, const std::string& label);
 
   // memory access by address in reg
   void emit_load_word(AsmOut& o, const std::string& rd, const std::string& raddr);

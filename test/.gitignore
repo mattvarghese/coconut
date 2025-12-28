@@ -6,3 +6,4 @@ dumbterminal
 simplekeyboard
 simplescreen
 smallc
+*.smallc.mips
