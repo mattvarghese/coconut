@@ -21,16 +21,19 @@
  # along with Coconut.  If not, see <http://www.gnu.org/licenses/>.
  # 
 
-MAKE		= make
-CD		= cd
-TESTDIR		= test/
+MAKE        = make
+CD          = cd
+TESTDIR     = test/
+COMPILERDIR = compiler/
 
-all: 
+all:
+	$(CD) $(COMPILERDIR); echo ; $(MAKE)
 	$(CD) $(TESTDIR); echo ; $(MAKE)
 	@echo
 	@echo "Ideally cd to test and do everything within that folder"
 
 clean:
+	$(CD) $(COMPILERDIR); echo ; $(MAKE) clean
 	$(CD) $(TESTDIR); echo ; $(MAKE) distclean
 	@echo
 	@echo "Ideally cd to test and do everything within that folder"
