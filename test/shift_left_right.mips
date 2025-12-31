@@ -1,4 +1,4 @@
- # Copyright 2005-2015 Varghese Mathew (Matt)
+ # Copyright 2005-2025 Varghese Mathew (Matt)
  # 
  # This file is part of Coconut (TM).
  # Coconut is a

@@ -91,7 +91,7 @@ din_dout_rdin_rdout.mips  mult_div.mips           syscall_instruction.mips
 ubuntu@ubuntu-rpi2:~/mini-project/test$ ./asm a.out helloworld.mips 
 
 Starting pass 1 ... 
- # Copyright 2005-2015 Varghese Mathew (Matt) 
+ # Copyright 2005-2025 Varghese Mathew (Matt) 
  #  
  # This file is part of Coconut (TM). 
  # Coconut is a 
@@ -135,7 +135,7 @@ Starting pass 1 ...
  end 
 
 Starting pass 2 ... 
- # Copyright 2005-2015 Varghese Mathew (Matt) 
+ # Copyright 2005-2025 Varghese Mathew (Matt) 
  #  
  # This file is part of Coconut (TM). 
  # Coconut is a 
