@@ -232,6 +232,25 @@ void Processor :: Clock ( int clk )
 				Terminate ( );
 				//requestProgramTermination = true;
 
+			case 'h':
+			case '?':
+				cout << blue
+					<< "\nCommands:"
+					<< "\n  h or ?       show this help"
+					<< "\n  n            execute one clock cycle"
+					<< "\n  c <number>   execute <number> clock cycles"
+					<< "\n  p            print all registers"
+					<< "\n  P            print non-zero registers"
+					<< "\n  m <addr>     display memory word at <addr>"
+					<< "\n  d <addr>     display data cache word at <addr>"
+					<< "\n  i <addr>     display instruction cache word at <addr>"
+					<< "\n  s            display cache statistics"
+					<< "\n  b <i> <addr> set breakpoint i (0-15) to <addr> (use -1 to clear)"
+					<< "\n  B            list breakpoints"
+					<< "\n  q            quit"
+					<< reset << flush;
+				break;
+
 			case 'n':
 				break;	// Do nothing... Avoid going into "default"
 

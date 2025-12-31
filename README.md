@@ -129,17 +129,18 @@ SmallC-generated programs typically end by returning from `main`, after which Co
 
 ## Coconut Simulator Commands
 The following commands are supported at the `mips >` prompt:
- 1. 'n' execute one clock cycle of the processor.
- 2. 'c {number}' execute {number} number of clock cycles.
- 3. 'p' print values of registers. (small 'p')
- 4. 'P' print values of registers for registers whose value is not zero. (capital 'P')
- 5. 'q' quit.
- 6. 'm {address}' display the value stored at memory addres {address}.
- 7. 'd {address}' display the value stored at 1-level data cache address {address}.
- 8. 'i {address}' display the value stored at 1-level instruction cache address {address}.
- 9. 's' display stastics for the caches.
- 10. 'b {breakpoint no.} {break address}' set one of the 0-15 breakpoints. To unset a breakpoint, set its address as -1.
- 11. 'B' view all breakpoints.
+ 1. 'h' or '?' shows the list of commands
+ 2. 'n' execute one clock cycle of the processor.
+ 3. 'c {number}' execute {number} number of clock cycles.
+ 4. 'p' print values of registers. (small 'p')
+ 5. 'P' print values of registers for registers whose value is not zero. (capital 'P')
+ 6. 'q' quit.
+ 7. 'm {address}' display the value stored at memory addres {address}.
+ 8. 'd {address}' display the value stored at 1-level data cache address {address}.
+ 9. 'i {address}' display the value stored at 1-level instruction cache address {address}.
+ 10. 's' display stastics for the caches.
+ 11. 'b {breakpoint no.} {break address}' set one of the 0-15 breakpoints. To unset a breakpoint, set its address as -1.
+ 12. 'B' view all breakpoints.
 
 When closing the simulator, make sure to first quit out of Coconut by entering 'q' at the 'mips >' prompt, before you close 'dumbterminal' (using Ctrl+C). Otherwise, you may have to wait a bit before the sockets that the terminal binds to are released, before the 'dumbterminal' can bind to them again. 
 
