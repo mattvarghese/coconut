@@ -142,7 +142,7 @@ The following commands are supported at the `mips >` prompt:
  11. 'b {breakpoint no.} {break address}' set one of the 0-15 breakpoints. To unset a breakpoint, set its address as -1.
  12. 'B' view all breakpoints.
 
-When closing the simulator, make sure to first quit out of Coconut by entering 'q' at the 'mips >' prompt, before you close 'dumbterminal' (using Ctrl+C). Otherwise, you may have to wait a bit before the sockets that the terminal binds to are released, before the 'dumbterminal' can bind to them again. 
+When closing the simulator, make sure to first quit out of Coconut by entering 'q' at the 'mips >' prompt, before you close 'dumbterminal' (using Ctrl+D). Otherwise, you may have to wait a bit before the sockets that the terminal binds to are released, before the 'dumbterminal' can bind to them again. 
 
 To cleanup the compile, run 'make distclean' from the 'test/' folder, and remove any 'a.out' file.
 Note: An example of virtual terminal mentioned above is an 'xterm' window. However, you can use any terminal.
