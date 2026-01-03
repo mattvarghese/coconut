@@ -27,6 +27,7 @@ RM		= rm
 MIPSDIR		= ../mips/
 ASMDIR		= ../asm/
 IODIR		= ../io/
+COMPILERDIR	= ../compiler/
 
 all: 
 	@echo 
@@ -38,6 +39,9 @@ all:
 	@echo 
 	@echo Making \'io\'...
 	$(CD) $(IODIR); echo ; $(MAKE)
+	@echo
+	@echo Making \'compiler\'...
+	$(CD) $(COMPILERDIR); echo ; $(MAKE)
 	@echo
 
 distclean:
@@ -51,4 +55,7 @@ distclean:
 	@echo Cleaning \'io\'...
 	$(CD) $(IODIR); echo ; $(MAKE) distclean
 	@echo
-
+	@echo Cleaning \'compiler\'...
+	$(CD) $(COMPILERDIR); echo ; $(MAKE) distclean
+	@echo
+	
