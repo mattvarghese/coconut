@@ -106,13 +106,13 @@ void Processor :: AtExit ( )
 			<< pc_mutex_value << reset << flush;
 	sem_close ( pc_mutex );
 	
-	sem_unlink ( "clocksem" );
-	sem_unlink ( "stagesem1" );
-	sem_unlink ( "stagesem2" );
-	sem_unlink ( "stagesem3" );
-	sem_unlink ( "stagesem4" );
-	sem_unlink ( "stagesem5" );
-	sem_unlink ( "pcmutex" );
+	sem_unlink ( "/clocksem" );
+	sem_unlink ( "/stagesem1" );
+	sem_unlink ( "/stagesem2" );
+	sem_unlink ( "/stagesem3" );
+	sem_unlink ( "/stagesem4" );
+	sem_unlink ( "/stagesem5" );
+	sem_unlink ( "/pcmutex" );
 }
 
 void Processor :: Terminate ( )
@@ -219,53 +219,53 @@ void* stage4 ( void * pobj )
 
 void Processor :: Execute ( )
 {
-	clocksem = sem_open ( "clocksem", O_CREAT | O_EXCL, O_RDWR, 5 );
+	clocksem = sem_open ( "/clocksem", O_CREAT | O_EXCL, O_RDWR, 5 );
 	if ( clocksem == NULL )
 	{
-		sem_unlink ( "clocksem" );
-		clocksem = sem_open ( "clocksem", O_CREAT, O_RDWR, 5 );
+		sem_unlink ( "/clocksem" );
+		clocksem = sem_open ( "/clocksem", O_CREAT, O_RDWR, 5 );
 	}
 	
-	pc_mutex = sem_open ( "pcmutex", O_CREAT | O_EXCL, O_RDWR, 1 );
+	pc_mutex = sem_open ( "/pcmutex", O_CREAT | O_EXCL, O_RDWR, 1 );
 	if ( pc_mutex == NULL )
 	{
-		sem_unlink ( "pcmutex" );
-		pc_mutex = sem_open ( "pcmutex", O_CREAT, O_RDWR, 1 );
+		sem_unlink ( "/pcmutex" );
+		pc_mutex = sem_open ( "/pcmutex", O_CREAT, O_RDWR, 1 );
 	}
 	
-	stagesem[0] = sem_open ( "stagesem1", O_CREAT | O_EXCL, O_RDWR, 0 );
+	stagesem[0] = sem_open ( "/stagesem1", O_CREAT | O_EXCL, O_RDWR, 0 );
 	if ( stagesem[0] == NULL )
 	{
-		sem_unlink ( "stagesem1" );
-		stagesem[0] = sem_open ( "stagesem1", O_CREAT, O_RDWR, 0 );
+		sem_unlink ( "/stagesem1" );
+		stagesem[0] = sem_open ( "/stagesem1", O_CREAT, O_RDWR, 0 );
 	}
 	
-	stagesem[1] = sem_open ( "stagesem2", O_CREAT | O_EXCL, O_RDWR, 0 );
+	stagesem[1] = sem_open ( "/stagesem2", O_CREAT | O_EXCL, O_RDWR, 0 );
 	if ( stagesem[1] == NULL )
 	{
-		sem_unlink ( "stagesem2" );
-		stagesem[1] = sem_open ( "stagesem2", O_CREAT, O_RDWR, 0 );
+		sem_unlink ( "/stagesem2" );
+		stagesem[1] = sem_open ( "/stagesem2", O_CREAT, O_RDWR, 0 );
 	}
 	
-	stagesem[2] = sem_open ( "stagesem3", O_CREAT | O_EXCL, O_RDWR, 0 );
+	stagesem[2] = sem_open ( "/stagesem3", O_CREAT | O_EXCL, O_RDWR, 0 );
 	if ( stagesem[2] == NULL )
 	{
-		sem_unlink ( "stagesem3" );
-		stagesem[2] = sem_open ( "stagesem3", O_CREAT, O_RDWR, 0 );
+		sem_unlink ( "/stagesem3" );
+		stagesem[2] = sem_open ( "/stagesem3", O_CREAT, O_RDWR, 0 );
 	}
 	
-	stagesem[3] = sem_open ( "stagesem4", O_CREAT | O_EXCL, O_RDWR, 0 );
+	stagesem[3] = sem_open ( "/stagesem4", O_CREAT | O_EXCL, O_RDWR, 0 );
 	if ( stagesem[3] == NULL )
 	{
-		sem_unlink ( "stagesem4" );
-		stagesem[3] = sem_open ( "stagesem4", O_CREAT, O_RDWR, 0 );
+		sem_unlink ( "/stagesem4" );
+		stagesem[3] = sem_open ( "/stagesem4", O_CREAT, O_RDWR, 0 );
 	}
 	
-	stagesem[4] = sem_open ( "stagesem5", O_CREAT | O_EXCL, O_RDWR, 0 );
+	stagesem[4] = sem_open ( "/stagesem5", O_CREAT | O_EXCL, O_RDWR, 0 );
 	if ( stagesem[4] == NULL )
 	{
-		sem_unlink ( "stagesem5" );
-		stagesem[4] = sem_open ( "stagesem5", O_CREAT, O_RDWR, 0 );
+		sem_unlink ( "/stagesem5" );
+		stagesem[4] = sem_open ( "/stagesem5", O_CREAT, O_RDWR, 0 );
 	}
 	
 	if ( clocksem == NULL || pc_mutex == NULL || stagesem[0] == NULL ||

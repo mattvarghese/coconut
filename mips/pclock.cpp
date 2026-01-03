@@ -61,7 +61,7 @@ void Processor :: Clock ( int clk )
 				<< cout_mutex_value << gray << flush;
 			
 		sem_close ( cout_mutex );
-		sem_unlink ( "coutmutex" );
+		sem_unlink ( "/coutmutex" );
 				
 		// As we are using the 'exit()' to exit from the program,
 		// the various destructors don't get invoked...

@@ -49,11 +49,11 @@ Cache * pickCache ( Cache * mem, bool noMultilevel, char * type, int level );
 
 int main ( )
 {	
-	cout_mutex = sem_open ( "coutmutex", O_CREAT | O_EXCL, O_RDWR, 1 );
+	cout_mutex = sem_open ( "/coutmutex", O_CREAT | O_EXCL, O_RDWR, 1 );
 	if ( cout_mutex == NULL )
 	{
-		sem_unlink ( "coutmutex" );
-		cout_mutex = sem_open ( "coutmutex", O_CREAT, O_RDWR, 1 );
+		sem_unlink ( "/coutmutex" );
+		cout_mutex = sem_open ( "/coutmutex", O_CREAT, O_RDWR, 1 );
 	}
 	if ( cout_mutex == NULL )
 	{
