@@ -39,8 +39,8 @@ using std::flush;
 
 # include <sys/socket.h>
 
-//# include <netinet/in.h>
-// Redundant, for struct sockaddr_in.
+# include <netinet/in.h>
+// Redundant, for struct sockaddr_in. But in FreeBSD 14.3 required.
 
 # include <netdb.h>
 // For sockaddr_in, htons(), hostent, gethostbyname().
