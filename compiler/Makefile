@@ -34,3 +34,5 @@ $(OUT): $(SRC)
 
 clean:
 	rm -f $(OUT) *.o
+
+distclean: clean
